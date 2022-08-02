@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "name": "nx-sonarqube",
+  "version": "0.0.1",
+  "generators": {
+    "nx-sonarqube": {
+      "factory": "./src/generators/nx-sonarqube/generator",
+      "schema": "./src/generators/nx-sonarqube/schema.json",
+      "description": "nx-sonarqube generator"
+    }
+  }
+}

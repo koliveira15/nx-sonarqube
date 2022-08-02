@@ -1,0 +1,42 @@
+{
+  "name": "koliveira15",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "nx serve",
+    "build": "nx build",
+    "test": "nx test"
+  },
+  "private": true,
+  "devDependencies": {
+    "@nrwl/cli": "14.5.1",
+    "@nrwl/devkit": "14.5.1",
+    "@nrwl/eslint-plugin-nx": "14.5.1",
+    "@nrwl/jest": "14.5.1",
+    "@nrwl/js": "14.5.1",
+    "@nrwl/linter": "14.5.1",
+    "@nrwl/nx-plugin": "^14.5.1",
+    "@nrwl/workspace": "14.5.1",
+    "@swc-node/register": "^1.4.2",
+    "@swc/cli": "~0.1.55",
+    "@swc/core": "^1.2.173",
+    "@types/jest": "27.4.1",
+    "@types/node": "16.11.7",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "eslint": "~8.15.0",
+    "eslint-config-prettier": "8.1.0",
+    "jest": "27.5.1",
+    "jsonc-eslint-parser": "^2.1.0",
+    "nx": "14.5.1",
+    "prettier": "^2.6.2",
+    "ts-jest": "27.1.4",
+    "ts-node": "~10.8.0",
+    "tslib": "^2.3.0",
+    "typescript": "~4.7.2"
+  },
+  "dependencies": {
+    "@swc/helpers": "~0.3.3",
+    "tslib": "^2.3.0"
+  }
+}

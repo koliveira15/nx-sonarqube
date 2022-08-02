@@ -1,0 +1,60 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/nx-sonarqube/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/nx-sonarqube",
+        "main": "packages/nx-sonarqube/src/index.ts",
+        "tsConfig": "packages/nx-sonarqube/tsconfig.lib.json",
+        "assets": [
+          "packages/nx-sonarqube/*.md",
+          {
+            "input": "./packages/nx-sonarqube/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/nx-sonarqube/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/nx-sonarqube",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./packages/nx-sonarqube",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/nx-sonarqube/**/*.ts",
+          "packages/nx-sonarqube/generators.json",
+          "packages/nx-sonarqube/executors.json",
+          "packages/nx-sonarqube/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/nx-sonarqube"],
+      "options": {
+        "jestConfig": "packages/nx-sonarqube/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
