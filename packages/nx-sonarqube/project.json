@@ -52,7 +52,8 @@
       "outputs": ["coverage/packages/nx-sonarqube"],
       "options": {
         "jestConfig": "packages/nx-sonarqube/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "runInBand": true
       }
     }
   },
