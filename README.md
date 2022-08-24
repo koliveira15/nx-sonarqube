@@ -41,7 +41,9 @@ lcov Paths:
    ```bash
    npx nx sonar my-project
    ```
+   
    or
+   
    ```bash
    npx nx affected --target sonar
    ```
