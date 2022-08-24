@@ -35,7 +35,7 @@ lcov Paths:
    ```
 2. Execute the configuration generator to setup sonar for a given project:
    ```bash
-   npx nx @koliveira15/nx-sonarqube:config
+   npx nx g @koliveira15/nx-sonarqube:config
    ```
 
 ## Customization
