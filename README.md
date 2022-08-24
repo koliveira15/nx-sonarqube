@@ -37,6 +37,10 @@ lcov Paths:
    ```bash
    npx nx g @koliveira15/nx-sonarqube:config
    ```
+3. Execute the sonar target for the given project:
+   ```bash
+   npx nx sonar my-project
+   ```
 
 ## Customization
 
