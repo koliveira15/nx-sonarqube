@@ -1,6 +1,6 @@
 # @koliveira15/nx-sonarqube
 
-![logo](https://i.ibb.co/0M2Kjwp/nx-sonarqube.jpg)
+![logo](https://i.ibb.co/R0bzqtP/nx-sonarqube.png)
 
 ## About
 
