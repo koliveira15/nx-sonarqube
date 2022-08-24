@@ -63,6 +63,6 @@ Modify the executor options based on the configuration table below. These option
 | password           | No       | If you're using an authentication token, leave this blank. If you're using a login, this is the password that goes with your sonar.login username  |                       |
 | projectName        | No       | Name of the project that will be displayed on the web interface                                                                                    |                       |
 | projectVersion     | No       | The project version                                                                                                                                |                       |
-| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                                                       |                       |
-| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                                                               |                       |
+| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                                                       | true                  |
+| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                                                               | 300                   |
 | skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                                                   | false                 |
