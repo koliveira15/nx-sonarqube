@@ -1,10 +1,10 @@
 {
   "$schema": "http://json-schema.org/schema",
   "executors": {
-    "build": {
-      "implementation": "./src/executors/build/executor",
-      "schema": "./src/executors/build/schema.json",
-      "description": "build executor"
+    "scan": {
+      "implementation": "./src/executors/scan/executor",
+      "schema": "./src/executors/scan/schema.json",
+      "description": "Scans and uploads test coverage based on SonarQube options (https://docs.sonarqube.org/latest/analysis/analysis-parameters/)"
     }
   }
 }
