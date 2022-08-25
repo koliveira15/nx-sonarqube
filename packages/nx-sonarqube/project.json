@@ -9,6 +9,7 @@
       "options": {
         "outputPath": "dist/packages/nx-sonarqube",
         "main": "packages/nx-sonarqube/src/index.ts",
+        "buildableProjectDepsInPackageJsonType": "dependencies",
         "tsConfig": "packages/nx-sonarqube/tsconfig.lib.json",
         "assets": [
           "packages/nx-sonarqube/*.md",
