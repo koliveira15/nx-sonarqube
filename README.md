@@ -41,12 +41,11 @@ lcov Paths:
    ```bash
    npx nx sonar my-project
    ```
-   
    or
-   
    ```bash
-   npx nx affected --target sonar
+   npx nx affected --target sonar --parallel 1
    ```
+   **Note:** Due to limitations with the scanner, you cannot run more than one scan in parallel
 
 ## Customization
 

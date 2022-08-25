@@ -1,11 +1,5 @@
-# nx-sonarqube
+# @koliveira15/nx-sonarqube
 
-This library was generated with [Nx](https://nx.dev).
+![logo](https://i.ibb.co/R0bzqtP/nx-sonarqube.png)
 
-## Building
-
-Run `nx build nx-sonarqube` to build the library.
-
-## Running unit tests
-
-Run `nx test nx-sonarqube` to execute the unit tests via [Jest](https://jestjs.io).
+[See Documentation](https://github.com/koliveira15/nx-sonarqube)

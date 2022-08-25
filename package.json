@@ -1,7 +1,11 @@
 {
   "name": "koliveira15",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koliveira15/nx-sonarqube.git"
+  },
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
