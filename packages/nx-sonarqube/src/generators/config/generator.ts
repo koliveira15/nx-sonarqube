@@ -9,7 +9,7 @@ import {
 } from '@nrwl/devkit';
 import { NxSonarqubeGeneratorSchema } from './schema';
 
-export async function sonarQubeConfigGenerator(
+export default async function (
   tree: Tree,
   options: NxSonarqubeGeneratorSchema
 ) {

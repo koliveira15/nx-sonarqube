@@ -11,7 +11,7 @@ import { tsquery } from '@phenomnomnominal/tsquery';
 import { readFileSync } from 'fs';
 import { execSync } from 'child_process';
 
-export default async function sonarScanExecutor(
+export default async function (
   options: ScanExecutorSchema,
   context: ExecutorContext
 ): Promise<{ success: boolean }> {

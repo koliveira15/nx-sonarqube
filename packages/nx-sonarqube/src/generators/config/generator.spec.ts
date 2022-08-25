@@ -6,7 +6,7 @@ import {
   updateJson,
   updateProjectConfiguration,
 } from '@nrwl/devkit';
-import { sonarQubeConfigGenerator } from './generator';
+import sonarQubeConfigGenerator from './generator';
 import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
 
 describe('Configuration generator', () => {
