@@ -29,6 +29,14 @@ lcov Paths:
 
 ## Usage
 
+### Prerequisites
+
+1. Nx workspace
+2. SonarQube or Sonar Cloud instance
+3. Jest tests & code coverage enabled
+
+### Installation
+
 1. Install the package:
    ```bash
    npm i -D @koliveira15/nx-sonarqube
