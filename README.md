@@ -4,7 +4,7 @@
 
 ## About
 
-A Nx plugin that analyses a given project using [SonarQube](https://www.sonarqube.org)
+A Nx plugin that analyzes a given project using [SonarQube](https://www.sonarqube.org)
 / [SonarCloud](https://sonarcloud.io).
 
 ![graph](https://i.ibb.co/qYb9vXk/graph.png)
