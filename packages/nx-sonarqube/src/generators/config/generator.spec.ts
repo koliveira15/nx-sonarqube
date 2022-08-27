@@ -44,9 +44,7 @@ describe('Configuration generator', () => {
       projectKey: 'my-app-key',
       skipTargetDefaults: false,
     });
-    expect(tree.read('.gitignore').toString()).toContain(
-      '.scannerwork123456TEST'
-    );
+    expect(tree.read('.gitignore').toString()).toContain('.scannerwork');
   });
 
   it('should error if project has sonar config already', async () => {
