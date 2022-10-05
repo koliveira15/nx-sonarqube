@@ -27,7 +27,7 @@ function updateGitIgnore(tree: Tree): void {
   if (tree.exists(ignoreFile)) {
     let gitIgnore = tree.read('.gitignore').toString('utf-8');
     if (!gitIgnore.includes('.scannerwork')) {
-      gitIgnore += '\n.scannerwork';
+      gitIgnore += '\n# Sonar\n.scannerwork';
       tree.write(ignoreFile, gitIgnore);
     }
   }
@@ -62,10 +62,7 @@ function updateProjectConfig(
   } else {
     projectConfiguration.targets.sonar = {
       executor: '@koliveira15/nx-sonarqube:scan',
-      options: {
-        hostUrl: options.hostUrl,
-        projectKey: options.projectKey,
-      },
+      options: { ...options },
     };
     updateProjectConfiguration(tree, options.name, projectConfiguration);
   }
