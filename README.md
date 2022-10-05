@@ -4,7 +4,7 @@
 
 ## About
 
-A Nx plugin that analyzes a given project using [SonarQube](https://www.sonarqube.org)
+A Nx plugin that analyzes projects using [SonarQube](https://www.sonarqube.org)
 / [SonarCloud](https://sonarcloud.io).
 
 ![graph](https://i.ibb.co/qYb9vXk/graph.png)
@@ -55,21 +55,37 @@ lcov Paths:
    ```
    **Note:** Due to limitations with the scanner, you cannot run more than one scan in parallel
 
+## Authentication
+
+Node.js environment variables should be set as following:
+
+**SONAR_LOGIN:** The authentication token or login of a SonarQube user with either Execute Analysis permission on the project or Global Execute Analysis permission
+
+**SONAR_PASSWORD:** If you're using an authentication token, leave this blank. If you're using a login, this is the password that goes with your SONAR_LOGIN username
+
+```bash
+SONAR_LOGIN=xxx npx nx sonar my-project
+```
+
+or
+
+```bash
+SONAR_LOGIN=xxx SONAR_PASSWORD=xxx npx nx sonar my-project
+```
+
 ## Customization
 
 Modify the executor options based on the configuration table below. These options are based on [Analysis Parameters](https://docs.sonarqube.org/latest/analysis/analysis-parameters/)
 
-| Name               | Required | Description                                                                                                                                        | Default               |
-| ------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| hostUrl            | Yes      | Sonar server URL                                                                                                                                   | http://localhost:9000 |
-| projectKey         | Yes      | The project's unique key. Allowed characters are: letters, numbers, -, \_, . and :, with at least one non-digit.                                   |                       |
-| branches           | No       | Include branch name in analysis                                                                                                                    | false                 |
-| exclusions         | No       | Files to exclude from coverage                                                                                                                     |                       |
-| login              | No       | The authentication token or login of a SonarQube user with either Execute Analysis permission on the project or Global Execute Analysis permission |                       |
-| organization       | No       | Sonar organization                                                                                                                                 |                       |
-| password           | No       | If you're using an authentication token, leave this blank. If you're using a login, this is the password that goes with your sonar.login username  |                       |
-| projectName        | No       | Name of the project that will be displayed on the web interface                                                                                    |                       |
-| projectVersion     | No       | The project version                                                                                                                                |                       |
-| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                                                       | true                  |
-| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                                                               | 300                   |
-| skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                                                   | false                 |
+| Name               | Required | Description                                                                                                      | Default               |
+| ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- |
+| hostUrl            | Yes      | Sonar server URL                                                                                                 | http://localhost:9000 |
+| projectKey         | Yes      | The project's unique key. Allowed characters are: letters, numbers, -, \_, . and :, with at least one non-digit. |                       |
+| branches           | No       | Include branch name in analysis                                                                                  | false                 |
+| exclusions         | No       | Files to exclude from coverage                                                                                   |                       |
+| organization       | No       | Sonar organization                                                                                               |                       |
+| projectName        | No       | Name of the project that will be displayed on the web interface                                                  |                       |
+| projectVersion     | No       | The project version                                                                                              |                       |
+| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                     | true                  |
+| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                             | 300                   |
+| skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                 | false                 |

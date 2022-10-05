@@ -23,16 +23,8 @@
       "description": "Files to exclude from coverage",
       "type": "string"
     },
-    "login": {
-      "description": "The authentication token or login of a SonarQube user with either Execute Analysis permission on the project or Global Execute Analysis permission.",
-      "type": "string"
-    },
     "organization": {
       "description": "Sonar organization",
-      "type": "string"
-    },
-    "password": {
-      "description": "If you're using an authentication token, leave this blank. If you're using a login, this is the password that goes with your sonar.login username.",
       "type": "string"
     },
     "projectName": {
