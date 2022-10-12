@@ -1,10 +1,5 @@
 import sonarScanExecutor from './executor';
-import {
-  DependencyType,
-  ExecutorContext,
-  ProjectGraph,
-  readCachedProjectGraph,
-} from '@nrwl/devkit';
+import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
 import * as fs from 'fs';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
