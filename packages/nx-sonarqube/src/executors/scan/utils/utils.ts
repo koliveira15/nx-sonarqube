@@ -119,7 +119,7 @@ export async function scanner(
       'sonar.sources': paths.sources,
       'sonar.sourceEncoding': 'UTF-8',
       'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
-      'sonar.verbose': options.verbose,
+      'sonar.verbose': String(options.verbose),
     },
   });
 }
