@@ -34,19 +34,26 @@ function updateGitIgnore(tree: Tree): void {
 }
 
 function updateTargetDefaults(tree: Tree): void {
-  const nxJsonConfiguration = readNxJson();
-  const hasSonar = Object.keys(nxJsonConfiguration.targetDefaults).find(
-    (key) => key === 'sonar'
-  );
-
-  if (!hasSonar) {
-    updateJson<NxJsonConfiguration>(tree, 'nx.json', (json) => {
+  updateJson<NxJsonConfiguration>(tree, 'nx.json', (json) => {
+    const nxJsonConfiguration = readNxJson();
+    const hasSonar = Object.keys(nxJsonConfiguration.targetDefaults).find(
+      (key) => key === 'sonar'
+    );
+    const hasTest = Object.keys(nxJsonConfiguration.targetDefaults).find(
+      (key) => key === 'test'
+    );
+    if (!hasSonar) {
       json.targetDefaults.sonar = {
         dependsOn: ['^test', 'test'],
       };
-      return json;
-    });
-  }
+    }
+    if (!hasTest) {
+      json.targetDefaults.test = {
+        dependsOn: ['^test'],
+      };
+    }
+    return json;
+  });
 }
 
 function updateProjectConfig(

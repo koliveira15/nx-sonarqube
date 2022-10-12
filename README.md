@@ -7,7 +7,7 @@
 A Nx plugin that analyzes projects using [SonarQube](https://www.sonarqube.org)
 / [SonarCloud](https://sonarcloud.io).
 
-![graph](https://i.ibb.co/qYb9vXk/graph.png)
+![graph](https://i.ibb.co/whmZkm2/graph.png)
 
 To analyze "app-one", we need to know the project's dependencies. Using the Nx project graph,
 we see that this project has three dependencies, two static and one implicit. With this information,
@@ -15,17 +15,21 @@ the plugin gathers the source and coverage paths for the analysis.
 
 Sources:
 
-- apps/app-one/src
+- apps/app/src
 - libs/lib-b/src
 - libs/lib-c/src
 - libs/libs-d/src
+- libs/libs-e/src
+- libs/libs-f/src
 
 lcov Paths:
 
-- coverage/apps/app-one/lcov.info
+- coverage/apps/app/lcov.info
 - coverage/libs/lib-b/lcov.info
 - coverage/libs/lib-c/lcov.info
 - coverage/libs/libs-d/lcov.info
+- coverage/libs/libs-e/lcov.info
+- coverage/libs/libs-f/lcov.info
 
 ## Usage
 
@@ -57,21 +61,11 @@ lcov Paths:
 
 ## Authentication
 
-Node.js environment variables should be set as following:
+Sonar can require authentication credentials. You can set these via environment variables using [Nrwl's Nx recipe](https://nx.dev/recipe/define-environment-variables)
 
 **SONAR_LOGIN:** The authentication token or login of a SonarQube user with either Execute Analysis permission on the project or Global Execute Analysis permission
 
 **SONAR_PASSWORD:** If you're using an authentication token, leave this blank. If you're using a login, this is the password that goes with your SONAR_LOGIN username
-
-```bash
-SONAR_LOGIN=xxx npx nx sonar my-project
-```
-
-or
-
-```bash
-SONAR_LOGIN=xxx SONAR_PASSWORD=xxx npx nx sonar my-project
-```
 
 ## Customization
 
@@ -89,3 +83,4 @@ Modify the executor options based on the configuration table below. These option
 | qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                     | true                  |
 | qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                             | 300                   |
 | skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                 | false                 |
+| verbose            | No       | Add more detail to both client and server-side analysis logs                                                     | false                 |
