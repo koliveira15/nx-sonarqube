@@ -1,5 +1,10 @@
 import sonarScanExecutor from './executor';
-import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
+import {
+  DependencyType,
+  ExecutorContext,
+  ProjectGraph,
+  readCachedProjectGraph,
+} from '@nrwl/devkit';
 import * as fs from 'fs';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
@@ -10,6 +15,9 @@ let context: ExecutorContext;
 jest.mock('@nrwl/devkit', () => ({
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   ...jest.requireActual<any>('@nrwl/devkit'),
+  readCachedProjectGraph: jest.fn().mockImplementation(() => {
+    throw new Error('readCachedProjectGraph error');
+  }),
   createProjectGraphAsync: jest
     .fn()
     .mockImplementation(async () => projectGraph),
@@ -100,8 +108,88 @@ describe('Scan Executor', () => {
             target: 'lib3',
           },
         ],
+        lib1: [
+          {
+            type: DependencyType.static,
+            source: 'lib1',
+            target: 'lib2',
+          },
+          {
+            type: DependencyType.implicit,
+            source: 'lib1',
+            target: 'lib3',
+          },
+        ],
+        lib2: [
+          {
+            type: DependencyType.static,
+            source: 'lib2',
+            target: 'lib3',
+          },
+        ],
       },
-      nodes: {},
+      nodes: {
+        app1: {
+          name: 'app1',
+          type: 'app',
+          data: {
+            sourceRoot: 'apps/app1/src',
+            targets: {
+              test: {
+                executor: '',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+        },
+        lib1: {
+          name: 'lib1',
+          type: 'lib',
+          data: {
+            sourceRoot: 'libs/lib1/src',
+            targets: {
+              test: {
+                executor: '',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+        },
+        lib2: {
+          name: 'lib2',
+          type: 'lib',
+          data: {
+            sourceRoot: 'libs/lib2/src',
+            targets: {
+              test: {
+                executor: '',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+        },
+        lib3: {
+          name: 'lib3',
+          type: 'lib',
+          data: {
+            sourceRoot: 'libs/lib3/src',
+            targets: {
+              test: {
+                executor: '',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+        },
+      },
     };
 
     jestConfig = `export default {

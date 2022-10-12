@@ -49,6 +49,11 @@
       "description": "Skips adding implicit dependencies to the project graph analysis",
       "type": "boolean",
       "default": false
+    },
+    "verbose": {
+      "description": "Add more detail to both client and server-side analysis logs",
+      "type": "boolean",
+      "default": false
     }
   },
   "required": ["hostUrl", "projectKey"]
