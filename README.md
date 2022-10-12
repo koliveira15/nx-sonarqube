@@ -9,8 +9,8 @@ A Nx plugin that analyzes projects using [SonarQube](https://www.sonarqube.org)
 
 ![graph](https://i.ibb.co/whmZkm2/graph.png)
 
-To analyze "app-one", we need to know the project's dependencies. Using the Nx project graph,
-we see that this project has three dependencies, two static and one implicit. With this information,
+To analyze project "app", we need to know the its dependencies and sub-dependencies. Using the Nx project graph,
+we see that this project has five dependencies, four static and one implicit. With this information,
 the plugin gathers the source and coverage paths for the analysis.
 
 Sources:
