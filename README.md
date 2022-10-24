@@ -61,7 +61,7 @@ lcov Paths:
 
 ## Authentication
 
-Sonar can require authentication credentials. You can set these via environment variables using [Nrwl's Nx recipe](https://nx.dev/recipe/define-environment-variables)
+Sonar can require authentication credentials. You can set these via environment variables using [Nrwl's Nx recipe](https://nx.dev/recipes/environment-variables/define-environment-variables)
 
 **SONAR_LOGIN:** The authentication token or login of a SonarQube user with either Execute Analysis permission on the project or Global Execute Analysis permission
 
