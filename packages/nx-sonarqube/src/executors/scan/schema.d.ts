@@ -9,5 +9,6 @@ export interface ScanExecutorSchema {
   qualityGate?: boolean;
   qualityGateTimeout?: string;
   skipImplicitDeps?: boolean;
+  testInclusions?: string;
   verbose?: boolean;
 }
