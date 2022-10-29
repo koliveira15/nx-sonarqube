@@ -118,6 +118,8 @@ export async function scanner(
       'sonar.scm.provider': 'git',
       'sonar.sources': paths.sources,
       'sonar.sourceEncoding': 'UTF-8',
+      'sonar.tests': paths.sources,
+      'sonar.test.inclusions': options.testInclusions,
       'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
       'sonar.verbose': String(options.verbose),
     },

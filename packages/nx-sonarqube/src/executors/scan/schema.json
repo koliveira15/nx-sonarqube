@@ -50,6 +50,11 @@
       "type": "boolean",
       "default": false
     },
+    "testInclusions": {
+      "description": "Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis",
+      "type": "string",
+      "default": "**/*.spec.ts"
+    },
     "verbose": {
       "description": "Add more detail to both client and server-side analysis logs",
       "type": "boolean",
