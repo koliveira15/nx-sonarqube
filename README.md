@@ -83,4 +83,5 @@ Modify the executor options based on the configuration table below. These option
 | qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                     | true                  |
 | qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                             | 300                   |
 | skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                 | false                 |
+| testInclusions     | No       | Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis | **/*.spec.ts |
 | verbose            | No       | Add more detail to both client and server-side analysis logs                                                     | false                 |
