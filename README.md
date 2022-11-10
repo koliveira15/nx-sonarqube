@@ -9,6 +9,8 @@ A Nx plugin that analyzes projects using [SonarQube](https://www.sonarqube.org)
 
 ![graph](https://i.ibb.co/whmZkm2/graph.png)
 
+Test123
+
 To analyze project "app", we need to know the its dependencies and sub-dependencies. Using the Nx project graph,
 we see that this project has five dependencies, four static and one implicit. With this information,
 the plugin gathers the source and coverage paths for the analysis.
@@ -71,17 +73,17 @@ Sonar can require authentication credentials. You can set these via environment 
 
 Modify the executor options based on the configuration table below. These options are based on [Analysis Parameters](https://docs.sonarqube.org/latest/analysis/analysis-parameters/)
 
-| Name               | Required | Description                                                                                                      | Default               |
-| ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- |
-| hostUrl            | Yes      | Sonar server URL                                                                                                 | http://localhost:9000 |
-| projectKey         | Yes      | The project's unique key. Allowed characters are: letters, numbers, -, \_, . and :, with at least one non-digit. |                       |
-| branches           | No       | Include branch name in analysis                                                                                  | false                 |
-| exclusions         | No       | Files to exclude from coverage                                                                                   |                       |
-| organization       | No       | Sonar organization                                                                                               |                       |
-| projectName        | No       | Name of the project that will be displayed on the web interface                                                  |                       |
-| projectVersion     | No       | The project version                                                                                              |                       |
-| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                     | true                  |
-| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                             | 300                   |
-| skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                 | false                 |
-| testInclusions     | No       | Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis | **/*.spec.ts |
-| verbose            | No       | Add more detail to both client and server-side analysis logs                                                     | false                 |
+| Name               | Required | Description                                                                                                                                                    | Default               |
+| ------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| hostUrl            | Yes      | Sonar server URL                                                                                                                                               | http://localhost:9000 |
+| projectKey         | Yes      | The project's unique key. Allowed characters are: letters, numbers, -, \_, . and :, with at least one non-digit.                                               |                       |
+| branches           | No       | Include branch name in analysis                                                                                                                                | false                 |
+| exclusions         | No       | Files to exclude from coverage                                                                                                                                 |                       |
+| organization       | No       | Sonar organization                                                                                                                                             |                       |
+| projectName        | No       | Name of the project that will be displayed on the web interface                                                                                                |                       |
+| projectVersion     | No       | The project version                                                                                                                                            |                       |
+| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                                                                   | true                  |
+| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                                                                           | 300                   |
+| skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                                                               | false                 |
+| testInclusions     | No       | Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis | \*_/_.spec.ts         |
+| verbose            | No       | Add more detail to both client and server-side analysis logs                                                                                                   | false                 |
