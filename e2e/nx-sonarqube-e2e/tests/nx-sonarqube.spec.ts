@@ -1,4 +1,5 @@
 import {
+  copyNodeModules,
   ensureNxProject,
   readFile,
   readJson,
@@ -28,6 +29,7 @@ describe('nx-sonarqube e2e', () => {
 
   beforeAll(async () => {
     ensureNxProject('@koliveira15/nx-sonarqube', 'dist/packages/nx-sonarqube');
+    copyNodeModules(['@nrwl/jest', '@nrwl/js']);
     await createLibs(projects);
     await createDependency(project, project2);
     setupGlobalJest();
@@ -105,9 +107,10 @@ async function createDependency(project: string, project2: string) {
 }
 
 async function createLibs(projects: string[]) {
-  runCommand('npm i -D @nrwl/js');
   for (let i = 0; i < projects.length; i++) {
-    await runNxCommandAsync(`generate @nrwl/js:lib --name ${projects[i]}`);
+    await runNxCommandAsync(
+      `generate @nrwl/js:lib --name ${projects[i]} --unitTestRunner=jest`
+    );
 
     const projectPath = `libs/${projects[i]}/project.json`;
     const projectJson = readJson(projectPath);
