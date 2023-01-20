@@ -294,7 +294,7 @@ describe('Scan Executor', () => {
 
   it('should error on sonar scanner issue', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockImplementation(() => {
+    sonarQubeScanner.async.mockImplementation(() => {
       throw new Error();
     });
 

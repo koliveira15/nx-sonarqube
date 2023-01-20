@@ -128,7 +128,7 @@ export async function scanner(
     };
   }
 
-  sonarQubeScanner({
+  await sonarQubeScanner.async({
     serverUrl: options.hostUrl,
     options: scannerOptions,
   });
