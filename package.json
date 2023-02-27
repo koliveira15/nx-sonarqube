@@ -46,7 +46,7 @@
   "dependencies": {
     "@phenomnomnominal/tsquery": "5.0.0",
     "@swc/helpers": "0.3.3",
-    "sonarqube-scanner": "2.8.1",
+    "sonarqube-scanner": "3.0.0",
     "tslib": "2.3.0"
   },
   "lint-staged": {
