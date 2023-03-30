@@ -1,4 +1,5 @@
 import { ScanExecutorSchema } from '../schema';
+
 import {
   createProjectGraphAsync,
   DependencyType,
@@ -13,6 +14,9 @@ import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
+interface OptionMarshaller {
+  Options(): { [option: string]: string };
+}
 
 export declare type WorkspaceLibrary = {
   name: string;
@@ -20,6 +24,27 @@ export declare type WorkspaceLibrary = {
   sourceRoot: string;
   testTarget?: TargetConfiguration;
 };
+class ExtraMarshaller implements OptionMarshaller {
+  private readonly options: { [option: string]: string };
+  constructor(options: { [option: string]: string }) {
+    this.options = options;
+  }
+  Options(): { [p: string]: string } {
+    return this.options;
+  }
+}
+class EnvMarshaller implements OptionMarshaller {
+  Options(): { [p: string]: string } {
+    return Object.keys(process.env)
+      .filter((e) => e.startsWith('SONAR'))
+      .reduce((option, env) => {
+        let sonarEnv = env.toLowerCase();
+        sonarEnv = sonarEnv.replace('_', '.');
+        option[sonarEnv] = process.env[env];
+        return option;
+      }, {});
+  }
+}
 
 async function determinePaths(
   options: ScanExecutorSchema,
@@ -92,7 +117,7 @@ async function determinePaths(
 export async function scanner(
   options: ScanExecutorSchema,
   context: ExecutorContext
-) {
+): Promise<{ success: boolean; scannerOptions: { [option: string]: string } }> {
   const paths = await determinePaths(options, context);
 
   logger.log(`Included sources: ${paths.sources}`);
@@ -128,10 +153,19 @@ export async function scanner(
     };
   }
 
-  await sonarQubeScanner.async({
+  scannerOptions = combineOptions(
+    new ExtraMarshaller(options.extra),
+    new EnvMarshaller(),
+    scannerOptions
+  );
+  const success = await sonarQubeScanner.async({
     serverUrl: options.hostUrl,
     options: scannerOptions,
   });
+  return {
+    success: success,
+    scannerOptions: scannerOptions,
+  };
 }
 
 async function getDependentPackagesForProject(name: string): Promise<{
@@ -151,7 +185,25 @@ async function getDependentPackagesForProject(name: string): Promise<{
     workspaceLibraries: [...workspaceLibraries.values()],
   });
 }
-
+function combineOptions(
+  extraOptions: ExtraMarshaller,
+  envOptions: EnvMarshaller,
+  scannerOptions: { [option: string]: string }
+): { [option: string]: string } {
+  return {
+    ...extraOptions.Options(),
+    ...scannerOptions,
+    ...envOptions.Options(),
+  };
+}
+function optionMarshaller(
+  optionMarshaller: OptionMarshaller,
+  ...excludedOptions: string[]
+): { [option: string]: string } {
+  const options = optionMarshaller.Options();
+  excludedOptions.forEach((excludedOption) => delete options[excludedOption]);
+  return options;
+}
 function collectDependencies(
   projectGraph: ProjectGraph,
   name: string,

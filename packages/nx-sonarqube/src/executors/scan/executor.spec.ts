@@ -3,6 +3,8 @@ import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
 import * as fs from 'fs';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
+import { ScanExecutorSchema } from './schema';
+import { scanner } from './utils/utils';
 
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
@@ -306,5 +308,33 @@ describe('Scan Executor', () => {
       context
     );
     expect(output.success).toBeFalsy();
+  });
+
+  it('should override environment variable over options over extra ', async () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+    sonarQubeScanner.async.mockResolvedValue(true);
+    process.env['SONAR_BRANCH'] = 'main';
+    process.env['SONAR_VERBOSE'] = 'true';
+    const output = await scanner(
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      context
+    );
+
+    expect(output.success).toBe(true);
+    expect(output.scannerOptions['sonar.branch']).toBe('main');
+    expect(output.scannerOptions['sonar.verbose']).toBe('true');
+    expect(output.scannerOptions['sonar.log.level']).toBe('DEBUG');
+    expect(output.scannerOptions['sonar.test.inclusions']).toBe('include');
   });
 });
