@@ -14,7 +14,7 @@ import {
 } from '@nrwl/nx-plugin/src/utils/testing-utils/utils';
 import { names } from '@nrwl/devkit';
 
-const TIMEOUT = 1200000;
+const TIMEOUT = 120000;
 const projectName = 'nx-sonarqube';
 const project = uniq(projectName);
 const project2 = uniq(projectName);
