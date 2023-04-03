@@ -22,9 +22,9 @@ const implicitProject = uniq(`implicit-${projectName}`);
 const projects = [project, project2, implicitProject];
 
 describe('nx-sonarqube e2e', () => {
-  const hostUrl = 'https://sonarcloud.io';
-  const projectKey = 'nx-sonarqube-e2e';
-  const organization = 'koliveira15';
+  const hostUrl = process.env.SONAR_HOST_URL || 'https://sonarcloud.io';
+  const projectKey = process.env.SONAR_PROJECT_KEY || 'nx-sonarqube-e2e';
+  const organization = process.env.SONAR_ORGANIZATION || 'koliveira15';
   const exclusions = '**/*.spec.ts';
 
   beforeAll(async () => {
