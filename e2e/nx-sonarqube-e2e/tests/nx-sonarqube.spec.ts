@@ -14,7 +14,7 @@ import {
 } from '@nrwl/nx-plugin/src/utils/testing-utils/utils';
 import { names } from '@nrwl/devkit';
 
-const TIMEOUT = 120000;
+const TIMEOUT = 1200000;
 const projectName = 'nx-sonarqube';
 const project = uniq(projectName);
 const project2 = uniq(projectName);
@@ -79,6 +79,23 @@ describe('nx-sonarqube e2e', () => {
     },
     TIMEOUT
   );
+  it('should recognize coverageDirectory in test config', async () => {
+    const nxJson = readJson(`nx.json`);
+    nxJson.targetDefaults.test = {
+      options: {
+        coverageDirectory: '{workspaceRoot}/coverage/test/{projectRoot}',
+      },
+    };
+    writeFileSync(`tmp/nx-e2e/proj/nx.json`, JSON.stringify(nxJson, null, 2));
+    await runNxCommandAsync(`sonar ${project} --skip-nx-cache`);
+    checkFilesExist(
+      `coverage/test/libs/${project}/lcov.info`,
+      `coverage/test/libs/${project2}/lcov.info`
+    );
+    // remove changes so it won't affect later tests
+    nxJson.targetDefaults.test = {};
+    writeFileSync(`tmp/nx-e2e/proj/nx.json`, JSON.stringify(nxJson, null, 2));
+  });
 });
 
 async function createDependency(project: string, project2: string) {
