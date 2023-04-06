@@ -1,10 +1,10 @@
-# @c0zen/nx-sonarqube
+# @C0ZEN/nx-sonarqube
 
 ![logo](https://i.ibb.co/R0bzqtP/nx-sonarqube.png)
 
 ## About
 
-A Nx plugin that scans projects using [SonarQube](https://www.sonarqube.org)
+A Nx plugin that analyzes projects using [SonarQube](https://www.sonarqube.org)
 / [SonarCloud](https://sonarcloud.io).
 
 ![graph](https://i.ibb.co/whmZkm2/graph.png)
@@ -43,11 +43,11 @@ lcov Paths:
 
 1. Install the package:
    ```bash
-   npm i -D @c0zen/nx-sonarqube
+   npm i -D @C0ZEN/nx-sonarqube
    ```
 2. Execute the configuration generator to setup sonar for a given project:
    ```bash
-   npx nx g @c0zen/nx-sonarqube:config
+   npx nx g @C0ZEN/nx-sonarqube:config
    ```
 3. Execute the sonar target for the given project:
    ```bash
@@ -71,20 +71,17 @@ Sonar can require authentication credentials. You can set these via environment 
 
 Modify the executor options based on the configuration table below. These options are based on [Analysis Parameters](https://docs.sonarqube.org/latest/analysis/analysis-parameters/)
 
-| Name               | Required | Description                                                                                                                                                    | Default                                                                                               |
-| ------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| hostUrl            | Yes      | Sonar server URL                                                                                                                                               | http://localhost:9000                                                                                 |
-| projectKey         | Yes      | The project's unique key. Allowed characters are: letters, numbers, -, \_, . and :, with at least one non-digit.                                               |                                                                                                       |
-| branches           | No       | Include branch name in analysis                                                                                                                                | false                                                                                                 |
-| exclusions         | No       | Files to exclude from coverage                                                                                                                                 |                                                                                                       |
-| organization       | No       | Sonar organization                                                                                                                                             |                                                                                                       |
-| projectName        | No       | Name of the project that will be displayed on the web interface                                                                                                |                                                                                                       |
-| projectVersion     | No       | The project version.                                                                                                                                           | this will default to the package.json version of the app/lib, otherwise it will take the root version |
-| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                                                                   | true                                                                                                  |
-| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                                                                           | 300                                                                                                   |
-| skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                                                               | false                                                                                                 |
-| testInclusions     | No       | Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis | \*_/_.spec.ts                                                                                         |
-| verbose            | No       | Add more detail to both client and server-side analysis logs                                                                                                   | false                                                                                                 |
-| extra              | No       | A key value pair for any extra sonar variable that is not included in the list above                                                                           |                                                                                                       |
-
-In Addition, the plugin recognizes any environment variable that is prefixed by `SONAR` and will add it to the sonar executor variables. For example the environment variable `SONAR_LOG_LEVEL=DEBUG` will be recognized as `sonar.log.level=DEBUG`
+| Name               | Required | Description                                                                                                      | Default               |
+| ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------- | --------------------- |
+| hostUrl            | Yes      | Sonar server URL                                                                                                 | http://localhost:9000 |
+| projectKey         | Yes      | The project's unique key. Allowed characters are: letters, numbers, -, \_, . and :, with at least one non-digit. |                       |
+| branches           | No       | Include branch name in analysis                                                                                  | false                 |
+| exclusions         | No       | Files to exclude from coverage                                                                                   |                       |
+| organization       | No       | Sonar organization                                                                                               |                       |
+| projectName        | No       | Name of the project that will be displayed on the web interface                                                  |                       |
+| projectVersion     | No       | The project version                                                                                              |                       |
+| qualityGate        | No       | Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status                     | true                  |
+| qualityGateTimeout | No       | Sets the number of seconds that the scanner should wait for a report to be processed                             | 300                   |
+| skipImplicitDeps   | No       | Skips adding implicit dependencies to the project graph analysis                                                 | false                 |
+| testInclusions     | No       | Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis | **/*.spec.ts |
+| verbose            | No       | Add more detail to both client and server-side analysis logs                                                     | false                 |

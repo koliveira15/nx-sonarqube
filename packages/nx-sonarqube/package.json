@@ -1,18 +1,11 @@
 {
-  "name": "@c0zen/nx-sonarqube",
+  "name": "@C0ZEN/nx-sonarqube",
   "repository": {
     "type": "git",
     "url": "https://github.com/C0ZEN/nx-sonarqube.git"
   },
-  "version": "2.8.0",
+  "version": "1.0.0",
   "main": "src/index.js",
   "generators": "./generators.json",
-  "executors": "./executors.json",
-  "dependencies": {
-    "sonarqube-scanner": "^3.3.0",
-    "@phenomnomnominal/tsquery": "^5.0.1",
-    "tslib": "^2.6.2",
-    "lodash": "^4.17.21"
-  },
-  "private": false
+  "executors": "./executors.json"
 }

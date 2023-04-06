@@ -1,14 +1,15 @@
 {
   "name": "C0ZEN",
-  "version": "2.8.0",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/C0ZEN/nx-sonarqube.git"
   },
   "scripts": {
-    "build": "nx build nx-sonarqube",
-    "test": "nx test nx-sonarqube",
+    "start": "nx serve",
+    "build": "nx build",
+    "test": "nx test",
     "pre-commit": "lint-staged",
     "prepare": "husky install"
   },
@@ -27,7 +28,6 @@
     "@swc/cli": "0.1.55",
     "@swc/core": "1.2.173",
     "@types/jest": "27.4.1",
-    "@types/lodash": "4.14.194",
     "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "5.29.0",
     "@typescript-eslint/parser": "5.29.0",
@@ -46,7 +46,6 @@
   "dependencies": {
     "@phenomnomnominal/tsquery": "5.0.0",
     "@swc/helpers": "0.3.3",
-    "lodash": "4.17.21",
     "sonarqube-scanner": "3.0.0",
     "tslib": "2.3.0"
   },
