@@ -26,9 +26,6 @@ async function determinePaths(
   const sources: string[] = [];
   const lcovPaths: string[] = [];
   const deps = await getDependentPackagesForProject(context.projectName);
-
-  logger.info(`Found ${deps.workspaceLibraries.length} workspace libraries depending on ${context.projectName}`)
-
   const projectConfiguration = context.workspace.projects[context.projectName];
   deps.workspaceLibraries.push({
     name: context.projectName,
@@ -38,26 +35,25 @@ async function determinePaths(
   });
 
   deps.workspaceLibraries
-    .filter((project):boolean =>
+    .filter((project) =>
       options.skipImplicitDeps
         ? project.type === DependencyType.static
         : project.type === DependencyType.static ||
           project.type === DependencyType.implicit
     )
-    .forEach((dep):void => {
+    .forEach((dep) => {
       sources.push(dep.sourceRoot);
 
       if (dep.testTarget) {
         if (dep.testTarget.options.reportsDirectory) {
-          const lcovPath: string = joinPathFragments(
-            dep.testTarget.options.reportsDirectory
-              .replace(new RegExp(/'/g), '')
-              .replace(/^(?:\.\.\/)+/, ''),
-            'lcov.info'
+          lcovPaths.push(
+            joinPathFragments(
+              dep.testTarget.options.reportsDirectory
+                .replace(new RegExp(/'/g), '')
+                .replace(/^(?:\.\.\/)+/, ''),
+              'lcov.info'
+            )
           );
-
-          logger.info(`Found a report file => ${lcovPath}`)
-          lcovPaths.push(lcovPath);
         } else {
           logger.warn(
             `Skipping ${context.projectName} as it does not have a reportsDirectory`
@@ -69,7 +65,6 @@ async function determinePaths(
         );
       }
     });
-
   return Promise.resolve({
     lcovPaths: lcovPaths.join(','),
     sources: sources.join(','),
@@ -88,6 +83,7 @@ export async function scanner(
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
     'sonar.javascript.lcov.reportPaths': paths.lcovPaths,
+    'sonar.language': 'ts',
     'sonar.login': process.env.SONAR_LOGIN,
     'sonar.organization': options.organization,
     'sonar.password': process.env.SONAR_PASSWORD,
@@ -96,25 +92,14 @@ export async function scanner(
     'sonar.projectVersion': options.projectVersion,
     'sonar.qualitygate.timeout': options.qualityGateTimeout,
     'sonar.qualitygate.wait': String(options.qualityGate),
+    'sonar.scm.provider': 'git',
     'sonar.sources': paths.sources,
     'sonar.sourceEncoding': 'UTF-8',
     'sonar.tests': paths.sources,
     'sonar.test.inclusions': options.testInclusions,
     'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
     'sonar.verbose': String(options.verbose),
-    'sonar.projectBaseDir': options.projectBaseDir,
   };
-
-  if (options.pullRequest) {
-    scannerOptions = {
-      ...scannerOptions,
-      'sonar.pullrequest.github.summary_comment': String(options.gitHubPullRequestSummaryComment),
-      'sonar.pullrequest.provider': options.pullRequestProvider,
-      'sonar.pullrequest.branch': options.pullRequestBranch,
-      'sonar.pullrequest.key': options.pullRequestKey,
-      'sonar.pullrequest.base': options.pullRequestBase
-    }
-  }
 
   if (options.branches) {
     scannerOptions = {
@@ -164,7 +149,7 @@ function collectDependencies(
   }
   seen.add(name);
 
-  (projectGraph.dependencies[name] ?? []).forEach((dependency): void => {
+  (projectGraph.dependencies[name] ?? []).forEach((dependency) => {
     if (!dependency.target.startsWith('npm:')) {
       dependencies.workspaceLibraries.set(dependency.target, {
         name: dependency.target,
