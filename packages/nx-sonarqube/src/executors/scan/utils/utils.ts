@@ -46,14 +46,15 @@ async function determinePaths(
 
       if (dep.testTarget) {
         if (dep.testTarget.options.reportsDirectory) {
-          lcovPaths.push(
-            joinPathFragments(
-              dep.testTarget.options.reportsDirectory
-                .replace(new RegExp(/'/g), '')
-                .replace(/^(?:\.\.\/)+/, ''),
-              'lcov.info'
-            )
+          const lcovPath: string = joinPathFragments(
+            dep.testTarget.options.reportsDirectory
+              .replace(new RegExp(/'/g), '')
+              .replace(/^(?:\.\.\/)+/, ''),
+            'lcov.info'
           );
+
+          logger.info(`Found a report file => ${lcovPath}`)
+          lcovPaths.push(lcovPath);
         } else {
           logger.warn(
             `Skipping ${context.projectName} as it does not have a reportsDirectory`
