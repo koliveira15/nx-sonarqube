@@ -1,6 +1,6 @@
 {
   "name": "C0ZEN",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "pre-commit": "lint-staged",
     "prepare": "husky install"
   },
-  "private": true,
+  "private": false,
   "devDependencies": {
     "@nrwl/cli": "14.5.10",
     "@nrwl/devkit": "14.5.10",
