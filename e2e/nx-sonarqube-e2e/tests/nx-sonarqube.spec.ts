@@ -24,11 +24,11 @@ const projects = [project, project2, implicitProject];
 describe('nx-sonarqube e2e', () => {
   const hostUrl = 'https://sonarcloud.io';
   const projectKey = 'nx-sonarqube-e2e';
-  const organization = 'koliveira15';
+  const organization = 'C0ZEN';
   const exclusions = '**/*.spec.ts';
 
   beforeAll(async () => {
-    ensureNxProject('@koliveira15/nx-sonarqube', 'dist/packages/nx-sonarqube');
+    ensureNxProject('@C0ZEN/nx-sonarqube', 'dist/packages/nx-sonarqube');
     copyNodeModules(['@nrwl/jest', '@nrwl/js']);
     await createLibs(projects);
     await createDependency(project, project2);
@@ -44,7 +44,7 @@ describe('nx-sonarqube e2e', () => {
     'should generate test coverage, configure nx-sonarqube target, & include static and implicit sources in the scan',
     async () => {
       await runNxCommandAsync(
-        `generate @koliveira15/nx-sonarqube:config --name ${project} --hostUrl ${hostUrl} --projectKey ${projectKey} --projectName ${projectKey} --organization ${organization} --exclusions ${exclusions}`
+        `generate @C0ZEN/nx-sonarqube:config --name ${project} --hostUrl ${hostUrl} --projectKey ${projectKey} --projectName ${projectKey} --organization ${organization} --exclusions ${exclusions}`
       );
 
       await runNxCommandAsync(`sonar ${project} --skip-nx-cache`);

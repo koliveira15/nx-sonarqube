@@ -1,8 +1,8 @@
 {
-  "name": "@koliveira15/nx-sonarqube",
+  "name": "@C0ZEN/nx-sonarqube",
   "repository": {
     "type": "git",
-    "url": "https://github.com/koliveira15/nx-sonarqube.git"
+    "url": "https://github.com/C0ZEN/nx-sonarqube.git"
   },
   "version": "1.0.0",
   "main": "src/index.js",

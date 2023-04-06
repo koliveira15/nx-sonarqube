@@ -1,5 +1,5 @@
-# @koliveira15/nx-sonarqube
+# @C0ZEN/nx-sonarqube
 
 ![logo](https://i.ibb.co/R0bzqtP/nx-sonarqube.png)
 
-[See Documentation](https://github.com/koliveira15/nx-sonarqube)
+[See Documentation](https://github.com/C0ZEN/nx-sonarqube)

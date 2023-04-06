@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "koliveira15",
+  "npmScope": "C0ZEN",
   "affected": {
     "defaultBase": "main"
   },

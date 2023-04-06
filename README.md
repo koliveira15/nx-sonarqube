@@ -1,4 +1,4 @@
-# @koliveira15/nx-sonarqube
+# @C0ZEN/nx-sonarqube
 
 ![logo](https://i.ibb.co/R0bzqtP/nx-sonarqube.png)
 
@@ -37,17 +37,17 @@ lcov Paths:
 
 1. Nx workspace
 2. SonarQube or Sonar Cloud instance
-3. Jest tests & code coverage enabled
+3. Vitest tests & code coverage enabled
 
 ### Installation
 
 1. Install the package:
    ```bash
-   npm i -D @koliveira15/nx-sonarqube
+   npm i -D @C0ZEN/nx-sonarqube
    ```
 2. Execute the configuration generator to setup sonar for a given project:
    ```bash
-   npx nx g @koliveira15/nx-sonarqube:config
+   npx nx g @C0ZEN/nx-sonarqube:config
    ```
 3. Execute the sonar target for the given project:
    ```bash

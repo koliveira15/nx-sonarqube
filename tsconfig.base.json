@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@koliveira15/nx-sonarqube": ["packages/nx-sonarqube/src/index.ts"]
+      "@C0ZEN/nx-sonarqube": ["packages/nx-sonarqube/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

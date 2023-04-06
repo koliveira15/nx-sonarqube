@@ -68,7 +68,7 @@ function updateProjectConfig(
     );
   } else {
     projectConfiguration.targets.sonar = {
-      executor: '@koliveira15/nx-sonarqube:scan',
+      executor: '@C0ZEN/nx-sonarqube:scan',
       options: { ...options },
     };
     updateProjectConfiguration(tree, options.name, projectConfiguration);
