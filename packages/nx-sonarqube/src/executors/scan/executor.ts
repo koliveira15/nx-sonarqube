@@ -9,12 +9,14 @@ export default async function (
 ): Promise<{ success: boolean }> {
   let success = true;
 
-  await scanner(options, context).catch((e) => {
+  await scanner(options, context).catch((e): void => {
     logger.error(
       `The SonarQube scan failed for project '${context.projectName}'. Error: ${e}`
     );
     success = false;
   });
+
+  logger.info('Scanner finished');
 
   return {
     success: success,

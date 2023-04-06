@@ -20,11 +20,11 @@
       "default": false
     },
     "exclusions": {
-      "description": "Files to exclude from coverage",
+      "description": "Files to exclude from coverage.",
       "type": "string"
     },
     "organization": {
-      "description": "Sonar organization",
+      "description": "Sonar organization.",
       "type": "string"
     },
     "projectName": {
@@ -46,7 +46,7 @@
       "default": "300"
     },
     "skipImplicitDeps": {
-      "description": "Skips adding implicit dependencies to the project graph analysis",
+      "description": "Skips adding implicit dependencies to the project graph analysis.",
       "type": "boolean",
       "default": false
     },
@@ -56,7 +56,7 @@
       "default": "**/*.spec.ts"
     },
     "verbose": {
-      "description": "Add more detail to both client and server-side analysis logs",
+      "description": "Add more detail to both client and server-side analysis logs.",
       "type": "boolean",
       "default": false
     }
