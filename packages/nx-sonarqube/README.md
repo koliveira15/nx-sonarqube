@@ -1,4 +1,4 @@
-# @C0ZEN/nx-sonarqube
+# @c0zen/nx-sonarqube
 
 ![logo](https://i.ibb.co/R0bzqtP/nx-sonarqube.png)
 

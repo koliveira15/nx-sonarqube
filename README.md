@@ -1,4 +1,4 @@
-# @C0ZEN/nx-sonarqube
+# @c0zen/nx-sonarqube
 
 ![logo](https://i.ibb.co/R0bzqtP/nx-sonarqube.png)
 
@@ -43,11 +43,11 @@ lcov Paths:
 
 1. Install the package:
    ```bash
-   npm i -D @C0ZEN/nx-sonarqube
+   npm i -D @c0zen/nx-sonarqube
    ```
 2. Execute the configuration generator to setup sonar for a given project:
    ```bash
-   npx nx g @C0ZEN/nx-sonarqube:config
+   npx nx g @c0zen/nx-sonarqube:config
    ```
 3. Execute the sonar target for the given project:
    ```bash
