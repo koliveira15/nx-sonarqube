@@ -13,7 +13,7 @@
     "pre-commit": "lint-staged",
     "prepare": "husky install"
   },
-  "private": false,
+  "private": true,
   "devDependencies": {
     "@nrwl/cli": "14.5.10",
     "@nrwl/devkit": "14.5.10",
