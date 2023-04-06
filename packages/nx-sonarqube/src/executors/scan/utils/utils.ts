@@ -26,6 +26,9 @@ async function determinePaths(
   const sources: string[] = [];
   const lcovPaths: string[] = [];
   const deps = await getDependentPackagesForProject(context.projectName);
+
+  logger.info(`Found ${deps.workspaceLibraries.length} workspace libraries depending on ${context.projectName}`)
+
   const projectConfiguration = context.workspace.projects[context.projectName];
   deps.workspaceLibraries.push({
     name: context.projectName,
@@ -35,13 +38,13 @@ async function determinePaths(
   });
 
   deps.workspaceLibraries
-    .filter((project) =>
+    .filter((project):boolean =>
       options.skipImplicitDeps
         ? project.type === DependencyType.static
         : project.type === DependencyType.static ||
           project.type === DependencyType.implicit
     )
-    .forEach((dep) => {
+    .forEach((dep):void => {
       sources.push(dep.sourceRoot);
 
       if (dep.testTarget) {
@@ -66,6 +69,7 @@ async function determinePaths(
         );
       }
     });
+
   return Promise.resolve({
     lcovPaths: lcovPaths.join(','),
     sources: sources.join(','),
@@ -150,7 +154,7 @@ function collectDependencies(
   }
   seen.add(name);
 
-  (projectGraph.dependencies[name] ?? []).forEach((dependency) => {
+  (projectGraph.dependencies[name] ?? []).forEach((dependency): void => {
     if (!dependency.target.startsWith('npm:')) {
       dependencies.workspaceLibraries.set(dependency.target, {
         name: dependency.target,
