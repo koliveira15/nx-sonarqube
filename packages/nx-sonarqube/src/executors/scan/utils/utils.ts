@@ -8,8 +8,6 @@ import {
   ProjectGraph,
   readCachedProjectGraph,
 } from '@nrwl/devkit';
-import { readFileSync } from 'fs';
-import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
@@ -47,34 +45,18 @@ async function determinePaths(
       sources.push(dep.sourceRoot);
 
       if (dep.testTarget) {
-        if (dep.testTarget.options.jestConfig) {
-          const jestConfigPath = dep.testTarget.options.jestConfig;
-          const jestConfig = readFileSync(jestConfigPath, 'utf-8');
-          const ast = tsquery.ast(jestConfig);
-          const nodes = tsquery(
-            ast,
-            'Identifier[name="coverageDirectory"] ~ StringLiteral',
-            { visitAllChildren: true }
+        if (dep.testTarget.options.reportsDirectory) {
+          lcovPaths.push(
+            joinPathFragments(
+              dep.testTarget.options.reportsDirectory
+                .replace(new RegExp(/'/g), '')
+                .replace(/^(?:\.\.\/)+/, ''),
+              'lcov.info'
+            )
           );
-
-          if (nodes.length) {
-            lcovPaths.push(
-              joinPathFragments(
-                nodes[0]
-                  .getText()
-                  .replace(new RegExp(/'/g), '')
-                  .replace(/^(?:\.\.\/)+/, ''),
-                'lcov.info'
-              )
-            );
-          } else {
-            logger.warn(
-              `Skipping ${context.projectName} as it does not have a coverageDirectory in ${jestConfigPath}`
-            );
-          }
         } else {
           logger.warn(
-            `Skipping ${context.projectName} as it does not have a jestConfig`
+            `Skipping ${context.projectName} as it does not have a reportsDirectory`
           );
         }
       } else {
