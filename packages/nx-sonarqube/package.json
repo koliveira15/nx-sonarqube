@@ -1,5 +1,5 @@
 {
-  "name": "@C0ZEN/nx-sonarqube",
+  "name": "@c0zen/nx-sonarqube",
   "repository": {
     "type": "git",
     "url": "https://github.com/C0ZEN/nx-sonarqube.git"
