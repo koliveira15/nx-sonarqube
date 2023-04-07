@@ -12,4 +12,5 @@ export interface ScanExecutorSchema {
   testInclusions?: string;
   verbose?: boolean;
   projectBaseDir?: string;
+  gitHubPullRequestSummaryComment?: boolean;
 }
