@@ -1,7 +1,6 @@
 {
-  "version": 2,
-  "outputCapture": "direct-nodejs",
   "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
   "title": "SonarQube Scanner Executor",
   "description": "Scans and uploads test coverage based on SonarQube options (https://docs.sonarqube.org/latest/analysis/analysis-parameters/)",
   "type": "object",
@@ -56,11 +55,6 @@
       "type": "string",
       "default": "**/*.spec.ts"
     },
-    "tsConfig": {
-      "description": "Path to tsconfig.json",
-      "type": "string",
-      "default": "tsconfig.base.json"
-    },
     "verbose": {
       "description": "Add more detail to both client and server-side analysis logs.",
       "type": "boolean",
@@ -68,36 +62,6 @@
     },
     "projectBaseDir": {
       "description": "Project base directory.",
-      "type": "string",
-      "default": ""
-    },
-    "gitHubPullRequestSummaryComment": {
-      "description": "Add GitHub Pull Requests comments.",
-      "type": "boolean",
-      "default": false
-    },
-    "pullRequest": {
-      "description": "Enable to modify the Pull Request settings.",
-      "type": "boolean",
-      "default": false
-    },
-    "pullRequestProvider": {
-      "description": "Pull Request provider.",
-      "type": "string",
-      "default": "GitHub"
-    },
-    "pullRequestBranch": {
-      "description": "Pull Request branch.",
-      "type": "string",
-      "default": ""
-    },
-    "pullRequestKey": {
-      "description": "Pull Request key.",
-      "type": "string",
-      "default": ""
-    },
-    "pullRequestBase": {
-      "description": "Pull Request base.",
       "type": "string",
       "default": ""
     }
