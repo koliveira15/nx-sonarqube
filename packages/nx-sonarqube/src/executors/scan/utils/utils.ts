@@ -105,6 +105,7 @@ export async function scanner(
     'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
     'sonar.verbose': String(options.verbose),
     'sonar.projectBaseDir': options.projectBaseDir,
+    'sonar.pullrequest.github.summary_comment': String(options.gitHubPullRequestSummaryComment)
   };
 
   if (options.branches) {
