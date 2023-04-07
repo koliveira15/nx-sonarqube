@@ -104,6 +104,7 @@ export async function scanner(
     'sonar.test.inclusions': options.testInclusions,
     'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
     'sonar.verbose': String(options.verbose),
+    'sonar.projectBaseDir': options.projectBaseDir,
   };
 
   if (options.branches) {

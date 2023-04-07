@@ -59,6 +59,11 @@
       "description": "Add more detail to both client and server-side analysis logs.",
       "type": "boolean",
       "default": false
+    },
+    "projectBaseDir": {
+      "description": "Project base directory.",
+      "type": "string",
+      "default": ""
     }
   },
   "required": ["hostUrl", "projectKey"]
