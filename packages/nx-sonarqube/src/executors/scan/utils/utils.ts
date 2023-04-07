@@ -105,7 +105,11 @@ export async function scanner(
     'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
     'sonar.verbose': String(options.verbose),
     'sonar.projectBaseDir': options.projectBaseDir,
-    'sonar.pullrequest.github.summary_comment': String(options.gitHubPullRequestSummaryComment)
+    'sonar.pullrequest.github.summary_comment': String(options.gitHubPullRequestSummaryComment),
+    'sonar.pullrequest.provider': options.pullRequestProvider,
+    'sonar.pullrequest.branch': options.pullRequestBranch,
+    'sonar.pullrequest.key': options.pullRequestKey,
+    'sonar.pullrequest.base': options.pullRequestBase
   };
 
   if (options.branches) {

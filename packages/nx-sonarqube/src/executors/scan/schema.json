@@ -69,6 +69,23 @@
       "description": "Add GitHub Pull Requests comments.",
       "type": "boolean",
       "default": false
+    },
+    "pullRequestProvider": {
+      "description": "Pull Request provider.",
+      "type": "string",
+      "default": "GitHub"
+    },
+    "pullRequestBranch": {
+      "description": "Pull Request branch.",
+      "type": "string"
+    },
+    "pullRequestKey": {
+      "description": "Pull Request key.",
+      "type": "string"
+    },
+    "pullRequestBase": {
+      "description": "Pull Request base.",
+      "type": "string"
     }
   },
   "required": ["hostUrl", "projectKey"]

@@ -13,4 +13,8 @@ export interface ScanExecutorSchema {
   verbose?: boolean;
   projectBaseDir?: string;
   gitHubPullRequestSummaryComment?: boolean;
+  pullRequestProvider?: string;
+  pullRequestBranch: string;
+  pullRequestKey: string;
+  pullRequestBase: string;
 }
