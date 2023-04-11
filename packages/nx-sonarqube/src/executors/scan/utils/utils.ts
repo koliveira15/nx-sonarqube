@@ -167,7 +167,42 @@ export async function scanner(
     scannerOptions: scannerOptions,
   };
 }
-
+function getScannerOptions(
+  options: ScanExecutorSchema,
+  sources: string,
+  lcovPaths: string,
+  branch: string
+): { [option: string]: string } {
+  let scannerOptions: { [option: string]: string } = {
+    'sonar.exclusions': options.exclusions,
+    'sonar.javascript.lcov.reportPaths': lcovPaths,
+    'sonar.language': 'ts',
+    'sonar.login': process.env.SONAR_LOGIN,
+    'sonar.organization': options.organization,
+    'sonar.password': process.env.SONAR_PASSWORD,
+    'sonar.projectKey': options.projectKey,
+    'sonar.projectName': options.projectName,
+    'sonar.projectVersion': options.projectVersion,
+    'sonar.qualitygate.timeout': options.qualityGateTimeout,
+    'sonar.qualitygate.wait': String(options.qualityGate),
+    'sonar.scm.provider': 'git',
+    'sonar.sources': sources,
+    'sonar.sourceEncoding': 'UTF-8',
+    'sonar.tests': sources,
+    'sonar.test.inclusions': options.testInclusions,
+    'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
+    'sonar.verbose': String(options.verbose),
+  };
+  if (options.branches) {
+    scannerOptions['sonar.branch.name'] = branch;
+  }
+  scannerOptions = combineOptions(
+    new ExtraMarshaller(options.extra),
+    new EnvMarshaller(),
+    scannerOptions
+  );
+  return scannerOptions;
+}
 async function getDependentPackagesForProject(name: string): Promise<{
   workspaceLibraries: WorkspaceLibrary[];
 }> {
@@ -195,14 +230,6 @@ function combineOptions(
     ...scannerOptions,
     ...envOptions.Options(),
   };
-}
-function optionMarshaller(
-  optionMarshaller: OptionMarshaller,
-  ...excludedOptions: string[]
-): { [option: string]: string } {
-  const options = optionMarshaller.Options();
-  excludedOptions.forEach((excludedOption) => delete options[excludedOption]);
-  return options;
 }
 function collectDependencies(
   projectGraph: ProjectGraph,
