@@ -43,11 +43,8 @@ describe('nx-sonarqube e2e', () => {
   it(
     'should generate test coverage, configure nx-sonarqube target, & include static and implicit sources in the scan',
     async () => {
-      // await runNxCommandAsync(
-      //   `generate @koliveira15/nx-sonarqube:config --name ${project} --hostUrl ${hostUrl} --projectKey ${projectKey} --projectName ${projectKey} --organization ${organization} --exclusions ${exclusions}`
-      // );
       await runNxCommandAsync(
-        `generate @koliveira15/nx-sonarqube:config --name ${project} --hostUrl ${hostUrl} --projectKey ${projectKey} --projectName ${projectKey}  --exclusions ${exclusions}`
+        `generate @koliveira15/nx-sonarqube:config --name ${project} --hostUrl ${hostUrl} --projectKey ${projectKey} --projectName ${projectKey} --organization ${organization} --exclusions ${exclusions}`
       );
       await runNxCommandAsync(`sonar ${project} --skip-nx-cache`);
 

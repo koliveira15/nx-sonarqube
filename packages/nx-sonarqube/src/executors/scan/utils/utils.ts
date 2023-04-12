@@ -21,7 +21,7 @@ export declare type WorkspaceLibrary = {
   testTarget?: TargetConfiguration;
 };
 
-async function determinePaths(
+export async function determinePaths(
   options: ScanExecutorSchema,
   context: ExecutorContext
 ): Promise<{ lcovPaths: string; sources: string }> {

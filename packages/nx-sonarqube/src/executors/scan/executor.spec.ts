@@ -3,7 +3,7 @@ import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
 import * as fs from 'fs';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
-
+import { determinePaths } from './utils/utils';
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
 
@@ -306,5 +306,30 @@ describe('Scan Executor', () => {
       context
     );
     expect(output.success).toBeFalsy();
+  });
+  it('should return jest config coverage directory path', async () => {
+    const paths = await determinePaths(
+      {
+        hostUrl: 'url',
+        projectKey: 'key',
+      },
+      context
+    );
+    expect(paths.lcovPaths.includes('coverage/apps/app1/lcov.info')).toBe(true);
+  });
+  it('should return project test config coverage directory path', async () => {
+    const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
+    testContext.workspace.projects.app1.targets.test.options.coverageDirectory =
+      'coverage/test/apps/app1';
+    const paths = await determinePaths(
+      {
+        hostUrl: 'url',
+        projectKey: 'key',
+      },
+      testContext
+    );
+    expect(paths.lcovPaths.includes('coverage/test/apps/app1/lcov.info')).toBe(
+      true
+    );
   });
 });
