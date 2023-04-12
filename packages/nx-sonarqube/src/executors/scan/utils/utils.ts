@@ -21,7 +21,7 @@ export declare type WorkspaceLibrary = {
   testTarget?: TargetConfiguration;
 };
 
-async function determinePaths(
+export async function determinePaths(
   options: ScanExecutorSchema,
   context: ExecutorContext
 ): Promise<{ lcovPaths: string; sources: string }> {
@@ -47,7 +47,16 @@ async function determinePaths(
       sources.push(dep.sourceRoot);
 
       if (dep.testTarget) {
-        if (dep.testTarget.options.jestConfig) {
+        if (dep.testTarget.options.coverageDirectory) {
+          lcovPaths.push(
+            joinPathFragments(
+              dep.testTarget.options.coverageDirectory
+                .replace(new RegExp(/'/g), '')
+                .replace(/^(?:\.\.\/)+/, ''),
+              'lcov.info'
+            )
+          );
+        } else if (dep.testTarget.options.jestConfig) {
           const jestConfigPath = dep.testTarget.options.jestConfig;
           const jestConfig = readFileSync(jestConfigPath, 'utf-8');
           const ast = tsquery.ast(jestConfig);
