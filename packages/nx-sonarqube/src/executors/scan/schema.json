@@ -70,6 +70,11 @@
       "type": "boolean",
       "default": false
     },
+    "pullRequest": {
+      "description": "Enable to modify the Pull Request settings.",
+      "type": "boolean",
+      "default": false
+    },
     "pullRequestProvider": {
       "description": "Pull Request provider.",
       "type": "string",
@@ -77,15 +82,18 @@
     },
     "pullRequestBranch": {
       "description": "Pull Request branch.",
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "pullRequestKey": {
       "description": "Pull Request key.",
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "pullRequestBase": {
       "description": "Pull Request base.",
-      "type": "string"
+      "type": "string",
+      "default": ""
     }
   },
   "required": ["hostUrl", "projectKey"]
