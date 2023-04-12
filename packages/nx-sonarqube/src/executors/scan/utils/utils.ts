@@ -117,46 +117,21 @@ async function determinePaths(
 export async function scanner(
   options: ScanExecutorSchema,
   context: ExecutorContext
-): Promise<{ success: boolean; scannerOptions: { [option: string]: string } }> {
+): Promise<{ success: boolean }> {
   const paths = await determinePaths(options, context);
 
   logger.log(`Included sources: ${paths.sources}`);
   if (!options.qualityGate) logger.warn(`Skipping quality gate check`);
 
-  let scannerOptions: { [option: string]: string } = {
-    'sonar.exclusions': options.exclusions,
-    'sonar.javascript.lcov.reportPaths': paths.lcovPaths,
-    'sonar.language': 'ts',
-    'sonar.login': process.env.SONAR_LOGIN,
-    'sonar.organization': options.organization,
-    'sonar.password': process.env.SONAR_PASSWORD,
-    'sonar.projectKey': options.projectKey,
-    'sonar.projectName': options.projectName,
-    'sonar.projectVersion': options.projectVersion,
-    'sonar.qualitygate.timeout': options.qualityGateTimeout,
-    'sonar.qualitygate.wait': String(options.qualityGate),
-    'sonar.scm.provider': 'git',
-    'sonar.sources': paths.sources,
-    'sonar.sourceEncoding': 'UTF-8',
-    'sonar.tests': paths.sources,
-    'sonar.test.inclusions': options.testInclusions,
-    'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
-    'sonar.verbose': String(options.verbose),
-  };
-
+  let branch = '';
   if (options.branches) {
-    scannerOptions = {
-      'sonar.branch.name': execSync(
-        'git rev-parse --abbrev-ref HEAD'
-      ).toString(),
-      ...scannerOptions,
-    };
+    branch = execSync('git rev-parse --abbrev-ref HEAD').toString();
   }
-
-  scannerOptions = combineOptions(
-    new ExtraMarshaller(options.extra),
-    new EnvMarshaller(),
-    scannerOptions
+  const scannerOptions = getScannerOptions(
+    options,
+    paths.sources,
+    paths.lcovPaths,
+    branch
   );
   const success = await sonarQubeScanner.async({
     serverUrl: options.hostUrl,
@@ -164,10 +139,9 @@ export async function scanner(
   });
   return {
     success: success,
-    scannerOptions: scannerOptions,
   };
 }
-function getScannerOptions(
+export function getScannerOptions(
   options: ScanExecutorSchema,
   sources: string,
   lcovPaths: string,
