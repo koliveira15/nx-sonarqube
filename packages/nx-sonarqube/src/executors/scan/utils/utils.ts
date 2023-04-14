@@ -88,7 +88,6 @@ export async function scanner(
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
     'sonar.javascript.lcov.reportPaths': paths.lcovPaths,
-    'sonar.language': 'ts',
     'sonar.login': process.env.SONAR_LOGIN,
     'sonar.organization': options.organization,
     'sonar.password': process.env.SONAR_PASSWORD,
@@ -97,7 +96,6 @@ export async function scanner(
     'sonar.projectVersion': options.projectVersion,
     'sonar.qualitygate.timeout': options.qualityGateTimeout,
     'sonar.qualitygate.wait': String(options.qualityGate),
-    'sonar.scm.provider': 'git',
     'sonar.sources': paths.sources,
     'sonar.sourceEncoding': 'UTF-8',
     'sonar.tests': paths.sources,

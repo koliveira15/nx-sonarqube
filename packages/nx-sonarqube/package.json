@@ -4,14 +4,15 @@
     "type": "git",
     "url": "https://github.com/C0ZEN/nx-sonarqube.git"
   },
-  "version": "2.5.0",
+  "version": "2.6.0",
   "main": "src/index.js",
   "generators": "./generators.json",
   "executors": "./executors.json",
   "dependencies": {
-    "sonarqube-scanner": "3.0.0",
-    "@phenomnomnominal/tsquery": "5.0.0",
-    "tslib": "2.3.0"
+    "sonarqube-scanner": "^3",
+    "@phenomnomnominal/tsquery": "^5",
+    "tslib": "^2",
+    "lodash": "^4"
   },
   "private": false
 }
