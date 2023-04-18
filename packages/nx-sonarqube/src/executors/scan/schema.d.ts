@@ -11,4 +11,5 @@ export interface ScanExecutorSchema {
   skipImplicitDeps?: boolean;
   testInclusions?: string;
   verbose?: boolean;
+  extra?: { [option: string]: string };
 }

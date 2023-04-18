@@ -3,7 +3,7 @@ import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
 import * as fs from 'fs';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
-import { determinePaths } from './utils/utils';
+import { determinePaths, getScannerOptions } from './utils/utils';
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
 
@@ -331,5 +331,35 @@ describe('Scan Executor', () => {
     expect(paths.lcovPaths.includes('coverage/test/apps/app1/lcov.info')).toBe(
       true
     );
+  });
+
+  it('should override environment variable over options over extra ', async () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+    sonarQubeScanner.async.mockResolvedValue(true);
+    process.env['SONAR_BRANCH'] = 'main';
+    process.env['SONAR_VERBOSE'] = 'true';
+
+    const output = getScannerOptions(
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      'src/',
+      'coverage/apps',
+      ''
+    );
+
+    expect(output['sonar.branch']).toBe('main');
+    expect(output['sonar.verbose']).toBe('true');
+    expect(output['sonar.log.level']).toBe('DEBUG');
+    expect(output['sonar.test.inclusions']).toBe('include');
   });
 });
