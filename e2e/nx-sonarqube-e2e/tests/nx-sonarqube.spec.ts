@@ -7,7 +7,7 @@ import {
   runNxCommandAsync,
   uniq,
 } from '@nrwl/nx-plugin/testing';
-import { writeFileSync } from 'fs';
+import { copyFileSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import {
   checkFilesExist,
   updateFile,
@@ -46,7 +46,6 @@ describe('nx-sonarqube e2e', () => {
       await runNxCommandAsync(
         `generate @koliveira15/nx-sonarqube:config --name ${project} --hostUrl ${hostUrl} --projectKey ${projectKey} --projectName ${projectKey} --organization ${organization} --exclusions ${exclusions}`
       );
-
       await runNxCommandAsync(`sonar ${project} --skip-nx-cache`);
 
       checkFilesExist(
@@ -76,6 +75,75 @@ describe('nx-sonarqube e2e', () => {
         `coverage/libs/${project2}/lcov.info`,
         `coverage/libs/${implicitProject}/lcov.info`
       );
+    },
+    TIMEOUT
+  );
+  it(
+    'should recognize coverageDirectory in test config',
+    async () => {
+      const projectPath = `libs/${project}/project.json`;
+      const projectJson = readJson(projectPath);
+      const project2Path = `libs/${project2}/project.json`;
+      const project2Json = readJson(project2Path);
+      const projectJestPath = `libs/${project}/jest.config.ts`;
+      const project2JestPath = `libs/${project2}/jest.config.ts`;
+      const projectTmpJestPath = `libs/${project}/jest.tmp`;
+      const project2TmpJestPath = `libs/${project2}/jest.tmp`;
+      copyFileSync(
+        `tmp/nx-e2e/proj/${projectJestPath}`,
+        `tmp/nx-e2e/proj/${projectTmpJestPath}`
+      );
+      copyFileSync(
+        `tmp/nx-e2e/proj/${project2JestPath}`,
+        `tmp/nx-e2e/proj/${project2TmpJestPath}`
+      );
+      removeLineFromFile(
+        `coverageDirectory`,
+        `tmp/nx-e2e/proj/${projectJestPath}`
+      );
+      removeLineFromFile(
+        `coverageDirectory`,
+        `tmp/nx-e2e/proj/${project2JestPath}`
+      );
+
+      projectJson.targets.test.options.coverageDirectory = `coverage/changed/libs/${project}`;
+      project2Json.targets.test.options.coverageDirectory = `coverage/changed/libs/${project2}`;
+      writeFileSync(
+        `tmp/nx-e2e/proj/${projectPath}`,
+        JSON.stringify(projectJson, null, 2)
+      );
+      writeFileSync(
+        `tmp/nx-e2e/proj/${project2Path}`,
+        JSON.stringify(project2Json, null, 2)
+      );
+
+      await runNxCommandAsync(`sonar ${project} --skip-nx-cache`);
+      checkFilesExist(
+        `coverage/changed/libs/${project}/lcov.info`,
+        `coverage/changed/libs/${project2}/lcov.info`
+      );
+      // cleanup
+      // remove changes so it won't affect later tests
+      delete projectJson.targets.test.options.coverageDirectory;
+      delete project2Json.targets.test.options.coverageDirectory;
+      writeFileSync(
+        `tmp/nx-e2e/proj/${projectPath}`,
+        JSON.stringify(projectJson, null, 2)
+      );
+      writeFileSync(
+        `tmp/nx-e2e/proj/${project2Path}`,
+        JSON.stringify(project2Json, null, 2)
+      );
+      copyFileSync(
+        `tmp/nx-e2e/proj/${projectTmpJestPath}`,
+        `tmp/nx-e2e/proj/${projectJestPath}`
+      );
+      copyFileSync(
+        `tmp/nx-e2e/proj/${project2TmpJestPath}`,
+        `tmp/nx-e2e/proj/${project2JestPath}`
+      );
+      rmSync(`tmp/nx-e2e/proj/${projectTmpJestPath}`);
+      rmSync(`tmp/nx-e2e/proj/${project2TmpJestPath}`);
     },
     TIMEOUT
   );
@@ -121,7 +189,13 @@ async function createLibs(projects: string[]) {
     );
   }
 }
+function removeLineFromFile(line: string, filePath: string) {
+  let content = readFileSync(filePath, 'utf-8');
+  let regex = new RegExp(`^.*${line}.*$`, 'mg');
 
+  content = content.replace(regex, '');
+  writeFileSync(filePath, content);
+}
 function setupGlobalJest() {
   const jest = readFile(`jest.preset.js`).replace(
     'module.exports = { ...nxPreset };',
