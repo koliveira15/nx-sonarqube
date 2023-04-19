@@ -1,12 +1,13 @@
 import sonarScanExecutor from './executor';
 import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
 import * as fs from 'fs';
+import * as fsPromise from 'fs/promises';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
 import { determinePaths, getScannerOptions } from './utils/utils';
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
-
+class MockError extends Error {}
 jest.mock('@nrwl/devkit', () => ({
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   ...jest.requireActual<any>('@nrwl/devkit'),
@@ -22,7 +23,7 @@ jest.mock('sonarqube-scanner');
 
 describe('Scan Executor', () => {
   let jestConfig: string;
-
+  let defaultPackageJson: string;
   beforeEach(() => {
     context = {
       cwd: '',
@@ -186,6 +187,10 @@ describe('Scan Executor', () => {
         },
       },
     };
+    defaultPackageJson = `{
+    "version":"1.0.0"
+    }
+    `;
 
     jestConfig = `export default {
       displayName: 'app1',
@@ -335,11 +340,16 @@ describe('Scan Executor', () => {
 
   it('should override environment variable over options over extra ', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+
+    jest
+      .spyOn(fsPromise, 'readFile')
+      .mockResolvedValue(new Buffer(defaultPackageJson));
     sonarQubeScanner.async.mockResolvedValue(true);
     process.env['SONAR_BRANCH'] = 'main';
     process.env['SONAR_VERBOSE'] = 'true';
 
-    const output = getScannerOptions(
+    const output = await getScannerOptions(
+      context,
       {
         hostUrl: 'url',
         verbose: false,
@@ -361,5 +371,150 @@ describe('Scan Executor', () => {
     expect(output['sonar.verbose']).toBe('true');
     expect(output['sonar.log.level']).toBe('DEBUG');
     expect(output['sonar.test.inclusions']).toBe('include');
+  });
+  it('should return app package json', async () => {
+    const packageJson = {
+      version: '1.1.1',
+    };
+
+    jest.spyOn(fsPromise, 'readFile').mockImplementation(async (path) => {
+      if (path == 'apps/app1/package.json') {
+        return new Buffer(JSON.stringify(packageJson));
+      }
+      throw new MockError(
+        `mocked Implementation expected apps/app1/package.json. provided path:${path}`
+      );
+    });
+    const output = await getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      'src/',
+      'coverage/apps',
+      ''
+    );
+
+    expect(output['sonar.projectVersion']).toBe(packageJson.version);
+  });
+  it('should return root package json', async () => {
+    const packageJson = {
+      version: '2.1.2',
+    };
+
+    jest.spyOn(fsPromise, 'readFile').mockImplementation(async (path) => {
+      if (path != 'package.json') {
+        throw new MockError(
+          `mocked expecting a package.json as path. given path:${path}`
+        );
+      }
+      return new Buffer(JSON.stringify(packageJson));
+    });
+    const output = await getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      'src/',
+      'coverage/apps',
+      ''
+    );
+
+    expect(output['sonar.projectVersion']).toBe(packageJson.version);
+  });
+  it('should return options version', async () => {
+    const packageVersion = '3.3.3';
+    jest
+      .spyOn(fsPromise, 'readFile')
+      .mockResolvedValue(new Buffer(JSON.stringify(defaultPackageJson)));
+    const output = await getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        projectVersion: packageVersion,
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      'src/',
+      'coverage/apps',
+      ''
+    );
+
+    expect(output['sonar.projectVersion']).toBe(packageVersion);
+  });
+  it('should return no version', async () => {
+    jest
+      .spyOn(fsPromise, 'readFile')
+      .mockResolvedValue(new Buffer(JSON.stringify('{}')));
+    const output = await getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      'src/',
+      'coverage/apps',
+      ''
+    );
+
+    expect(output['sonar.projectVersion']).toBe('');
+  });
+  it('should return no version 2', async () => {
+    jest.spyOn(fsPromise, 'readFile').mockImplementation(async (path) => {
+      throw new MockError('this mock is supposed to fail on every call');
+    });
+    const output = await getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      'src/',
+      'coverage/apps',
+      ''
+    );
+
+    expect(output['sonar.projectVersion']).toBe('');
   });
 });

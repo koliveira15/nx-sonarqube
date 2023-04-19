@@ -10,6 +10,7 @@ import {
   readCachedProjectGraph,
 } from '@nrwl/devkit';
 import { readFileSync } from 'fs';
+import { readFile } from 'fs/promises';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
@@ -136,7 +137,8 @@ export async function scanner(
   if (options.branches) {
     branch = execSync('git rev-parse --abbrev-ref HEAD').toString();
   }
-  const scannerOptions = getScannerOptions(
+  const scannerOptions = await getScannerOptions(
+    context,
     options,
     paths.sources,
     paths.lcovPaths,
@@ -150,12 +152,19 @@ export async function scanner(
     success: success,
   };
 }
-export function getScannerOptions(
+export async function getScannerOptions(
+  context: ExecutorContext,
   options: ScanExecutorSchema,
   sources: string,
   lcovPaths: string,
   branch: string
-): { [option: string]: string } {
+): Promise<{ [option: string]: string }> {
+  let version = '';
+  if (options.projectVersion) {
+    version = options.projectVersion;
+  } else {
+    version = await projectPackageVersion(context);
+  }
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
     'sonar.javascript.lcov.reportPaths': lcovPaths,
@@ -165,7 +174,7 @@ export function getScannerOptions(
     'sonar.password': process.env.SONAR_PASSWORD,
     'sonar.projectKey': options.projectKey,
     'sonar.projectName': options.projectName,
-    'sonar.projectVersion': options.projectVersion,
+    'sonar.projectVersion': version,
     'sonar.qualitygate.timeout': options.qualityGateTimeout,
     'sonar.qualitygate.wait': String(options.qualityGate),
     'sonar.scm.provider': 'git',
@@ -213,6 +222,46 @@ function combineOptions(
     ...scannerOptions,
     ...envOptions.Options(),
   };
+}
+
+export async function projectPackageVersion(
+  context: ExecutorContext
+): Promise<string> {
+  const projectName = context.projectName;
+  try {
+    const projectPackagePath = context.workspace.projects[projectName].root;
+    const packageJson = JSON.parse(
+      (await readFile(`${projectPackagePath}/package.json`)).toString()
+    );
+    const version = packageJson.version;
+    if (version) {
+      logger.debug(
+        `resolved project:${projectName} package version:${version}`
+      );
+      return version;
+    }
+  } catch (e) {
+    logger.debug(e);
+  }
+  logger.warn(
+    `could not resolve project:${projectName}, trying to use root project version`
+  );
+  try {
+    const packageJson = JSON.parse((await readFile(`package.json`)).toString());
+    const version = packageJson.version;
+    if (version) {
+      logger.debug(
+        `resolved project:${projectName} from root. root package version:${version}`
+      );
+      return version;
+    }
+  } catch (e) {
+    logger.error(e);
+  }
+  logger.warn(
+    `root project doesn't have a package json version. no version will be used for ${projectName}`
+  );
+  return '';
 }
 function collectDependencies(
   projectGraph: ProjectGraph,
