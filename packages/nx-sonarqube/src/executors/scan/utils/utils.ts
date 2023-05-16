@@ -39,7 +39,7 @@ class EnvMarshaller implements OptionMarshaller {
       .filter((e) => e.startsWith('SONAR'))
       .reduce((option, env) => {
         let sonarEnv = env.toLowerCase();
-        sonarEnv = sonarEnv.replace('_', '.');
+        sonarEnv = sonarEnv.replace(/_/g, '.');
         option[sonarEnv] = process.env[env];
         return option;
       }, {});
