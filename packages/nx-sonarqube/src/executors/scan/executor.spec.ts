@@ -337,6 +337,7 @@ describe('Scan Executor', () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
     sonarQubeScanner.async.mockResolvedValue(true);
     process.env['SONAR_BRANCH'] = 'main';
+    process.env['SONAR_LOG_LEVEL_EXTENDED'] = 'DEBUG';
     process.env['SONAR_VERBOSE'] = 'true';
 
     const output = getScannerOptions(
@@ -360,6 +361,7 @@ describe('Scan Executor', () => {
     expect(output['sonar.branch']).toBe('main');
     expect(output['sonar.verbose']).toBe('true');
     expect(output['sonar.log.level']).toBe('DEBUG');
+    expect(output['sonar.log.level.extended']).toBe('DEBUG');
     expect(output['sonar.test.inclusions']).toBe('include');
   });
 });
