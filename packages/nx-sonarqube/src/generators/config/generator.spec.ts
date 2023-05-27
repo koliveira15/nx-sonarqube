@@ -1,9 +1,9 @@
 import {
   addProjectConfiguration,
-  NxJsonConfiguration,
+  readNxJson,
   readProjectConfiguration,
   Tree,
-  updateJson,
+  updateNxJson,
   updateProjectConfiguration,
 } from '@nx/devkit';
 import sonarQubeConfigGenerator from './generator';
@@ -18,22 +18,26 @@ describe('Configuration generator', () => {
       root: 'apps/my-app',
       targets: {},
     });
-    updateJson<NxJsonConfiguration>(tree, 'nx.json', (json) => {
-      json.targetDefaults = {};
-      return json;
+    updateNxJson(tree, {
+      ...readNxJson(tree),
+      targetDefaults: {},
     });
   });
 
-  it('should generate target', async () => {
+  it('should generate target with target defaults', async () => {
     await sonarQubeConfigGenerator(tree, {
       name: 'my-app',
       hostUrl: 'sonar.url.com',
       projectKey: 'my-app-key',
       skipTargetDefaults: false,
     });
+
+    const targetDefaults = readNxJson(tree).targetDefaults;
     expect(
       readProjectConfiguration(tree, 'my-app').targets.sonar
     ).toBeDefined();
+    expect(targetDefaults.sonar).toBeDefined();
+    expect(targetDefaults.test).toBeDefined();
   });
 
   it('should add git ignores', async () => {
