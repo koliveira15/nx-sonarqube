@@ -6,7 +6,7 @@ import {
   Tree,
   updateJson,
   updateProjectConfiguration,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { NxSonarqubeGeneratorSchema } from './schema';
 
 export default async function (

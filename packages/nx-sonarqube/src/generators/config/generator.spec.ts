@@ -5,9 +5,9 @@ import {
   Tree,
   updateJson,
   updateProjectConfiguration,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import sonarQubeConfigGenerator from './generator';
-import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
+import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 
 describe('Configuration generator', () => {
   let tree: Tree;
@@ -50,7 +50,7 @@ describe('Configuration generator', () => {
   it('should error if project has sonar config already', async () => {
     expect.assertions(1);
     updateProjectConfiguration(tree, 'my-app', {
-      root: '',
+      root: 'apps/my-app',
       targets: {
         sonar: {
           executor: '',

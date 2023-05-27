@@ -8,7 +8,7 @@ import {
   logger,
   ProjectGraph,
   readCachedProjectGraph,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { readFileSync } from 'fs';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
