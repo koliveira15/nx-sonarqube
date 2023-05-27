@@ -1,5 +1,5 @@
 import sonarScanExecutor from './executor';
-import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
+import { DependencyType, ExecutorContext, ProjectGraph } from '@nx/devkit';
 import * as fs from 'fs';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
@@ -7,9 +7,9 @@ import { determinePaths, getScannerOptions } from './utils/utils';
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
 
-jest.mock('@nrwl/devkit', () => ({
+jest.mock('@nx/devkit', () => ({
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  ...jest.requireActual<any>('@nrwl/devkit'),
+  ...jest.requireActual<any>('@nx/devkit'),
   readCachedProjectGraph: jest.fn().mockImplementation(() => {
     throw new Error('readCachedProjectGraph error');
   }),
@@ -49,7 +49,7 @@ describe('Scan Executor', () => {
             sourceRoot: 'libs/lib1/src',
             targets: {
               test: {
-                executor: '@nrwl/jest:jest',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -61,7 +61,7 @@ describe('Scan Executor', () => {
             sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
-                executor: '@nrwl/jest:jest',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -73,7 +73,7 @@ describe('Scan Executor', () => {
             sourceRoot: 'libs/lib3/src',
             targets: {
               test: {
-                executor: '@nrwl/jest:jest',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -128,6 +128,8 @@ describe('Scan Executor', () => {
           name: 'app1',
           type: 'app',
           data: {
+            root: 'apps/app1',
+            files: [],
             sourceRoot: 'apps/app1/src',
             targets: {
               test: {
@@ -143,6 +145,8 @@ describe('Scan Executor', () => {
           name: 'lib1',
           type: 'lib',
           data: {
+            root: 'libs/lib1',
+            files: [],
             sourceRoot: 'libs/lib1/src',
             targets: {
               test: {
@@ -158,6 +162,8 @@ describe('Scan Executor', () => {
           name: 'lib2',
           type: 'lib',
           data: {
+            root: 'libs/lib2',
+            files: [],
             sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
@@ -173,6 +179,8 @@ describe('Scan Executor', () => {
           name: 'lib3',
           type: 'lib',
           data: {
+            root: 'libs/lib3',
+            files: [],
             sourceRoot: 'libs/lib3/src',
             targets: {
               test: {

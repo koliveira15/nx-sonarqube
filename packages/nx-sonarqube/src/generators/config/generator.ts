@@ -6,7 +6,7 @@ import {
   Tree,
   updateJson,
   updateProjectConfiguration,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { NxSonarqubeGeneratorSchema } from './schema';
 
 export default async function (
@@ -35,19 +35,13 @@ function updateGitIgnore(tree: Tree): void {
 
 function updateTargetDefaults(tree: Tree): void {
   updateJson<NxJsonConfiguration>(tree, 'nx.json', (json) => {
-    const nxJsonConfiguration = readNxJson();
-    const hasSonar = Object.keys(nxJsonConfiguration.targetDefaults).find(
-      (key) => key === 'sonar'
-    );
-    const hasTest = Object.keys(nxJsonConfiguration.targetDefaults).find(
-      (key) => key === 'test'
-    );
-    if (!hasSonar) {
+    const nxJsonConfiguration = readNxJson(tree);
+    if (!nxJsonConfiguration.targetDefaults.sonar) {
       json.targetDefaults.sonar = {
         dependsOn: ['^test', 'test'],
       };
     }
-    if (!hasTest) {
+    if (!nxJsonConfiguration.targetDefaults.test) {
       json.targetDefaults.test = {
         dependsOn: ['^test'],
       };

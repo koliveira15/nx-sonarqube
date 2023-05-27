@@ -6,13 +6,13 @@ import {
   runCommand,
   runNxCommandAsync,
   uniq,
-} from '@nrwl/nx-plugin/testing';
+} from '@nx/plugin/testing';
 import { copyFileSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import {
   checkFilesExist,
   updateFile,
-} from '@nrwl/nx-plugin/src/utils/testing-utils/utils';
-import { names } from '@nrwl/devkit';
+} from '@nx/plugin/src/utils/testing-utils/utils';
+import { names } from '@nx/devkit';
 
 const TIMEOUT = 120000;
 const projectName = 'nx-sonarqube';
@@ -29,15 +29,15 @@ describe('nx-sonarqube e2e', () => {
 
   beforeAll(async () => {
     ensureNxProject('@koliveira15/nx-sonarqube', 'dist/packages/nx-sonarqube');
-    copyNodeModules(['@nrwl/jest', '@nrwl/js']);
+    copyNodeModules(['@nx/jest', '@nx/js']);
     await createLibs(projects);
     await createDependency(project, project2);
     setupGlobalJest();
-    runCommand(`git init`); // workaround for initiating nx & projectGraph
+    runCommand(`git init`, {}); // workaround for initiating nx & projectGraph
   }, TIMEOUT);
 
-  afterAll(() => {
-    runNxCommandAsync('reset');
+  afterAll(async () => {
+    await runNxCommandAsync('reset');
   });
 
   it(
@@ -177,7 +177,7 @@ async function createDependency(project: string, project2: string) {
 async function createLibs(projects: string[]) {
   for (let i = 0; i < projects.length; i++) {
     await runNxCommandAsync(
-      `generate @nrwl/js:lib --name ${projects[i]} --unitTestRunner=jest`
+      `generate @nx/js:lib --name ${projects[i]} --unitTestRunner=jest`
     );
 
     const projectPath = `libs/${projects[i]}/project.json`;

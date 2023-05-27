@@ -1,8 +1,0 @@
-{
-  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
-  "version": 2,
-  "projects": {
-    "nx-sonarqube": "packages/nx-sonarqube",
-    "nx-sonarqube-e2e": "e2e/nx-sonarqube-e2e"
-  }
-}

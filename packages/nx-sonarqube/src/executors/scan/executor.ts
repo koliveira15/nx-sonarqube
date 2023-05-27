@@ -1,5 +1,5 @@
 import { ScanExecutorSchema } from './schema';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ExecutorContext, logger } from '@nx/devkit';
 
 import { scanner } from './utils/utils';
 
