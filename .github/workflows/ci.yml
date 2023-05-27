@@ -14,8 +14,6 @@ jobs:
   main:
     name: Nx Cloud - Main Job
     uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.8
-    secrets:
-      SONAR_LOGIN: ${{ secrets.SONAR_TOKEN }}
     with:
       number-of-agents: 3
       parallel-commands: |
