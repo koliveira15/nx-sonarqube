@@ -2,7 +2,7 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "koliveira15",
   "affected": {
-    "defaultBase": "main"
+    "defaultBase": "origin/main"
   },
   "implicitDependencies": {
     "package.json": {
