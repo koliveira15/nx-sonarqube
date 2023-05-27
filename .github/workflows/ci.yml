@@ -14,8 +14,6 @@ jobs:
     name: Nx Cloud - Main Job
     uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.8
     with:
-      environment-variables: |
-        SONAR_LOGIN= ${{ secrets.SONAR_TOKEN }}
       number-of-agents: 3
       parallel-commands: |
         npx nx-cloud record -- npx nx workspace-lint
