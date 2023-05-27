@@ -8,7 +8,6 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  SONAR_LOGIN: ${{ secrets.SONAR_TOKEN }}
 
 jobs:
   main:
@@ -22,7 +21,7 @@ jobs:
         npx nx affected --target=lint --parallel=3
         npx nx affected --target=test --parallel=3 --ci
         npx nx affected --target=build --parallel=3
-        npx nx affected --target=e2e --parallel=1
+        SONAR_LOGIN=${{ secrets.SONAR_TOKEN }} npx nx affected --target=e2e --parallel=1
 
   agents:
     name: Nx Cloud - Agents
