@@ -10,7 +10,8 @@
       "options": {
         "cacheableOperations": ["build", "lint", "test", "e2e"],
         "accessToken": "MWM4ZWZiNDgtOGYwMi00ZDI3LTllMDUtYTNkYTExMmU3MDY2fHJlYWQ=",
-        "parallel": 3
+        "parallel": 3,
+        "runtimeCacheInputs": ["node -v"]
       }
     }
   },
