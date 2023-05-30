@@ -23,7 +23,11 @@
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     },
     "test": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "dependsOn": ["^test"]
+    },
+    "sonar": {
+      "dependsOn": ["^test", "test"]
     }
   },
   "workspaceLayout": {
