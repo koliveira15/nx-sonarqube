@@ -24,8 +24,7 @@
         "qualityGate": true,
         "qualityGateTimeout": "300",
         "skipImplicitDeps": false
-      },
-      "dependsOn": ["nx-sonarqube:build"]
+      }
     }
   },
   "tags": [],
