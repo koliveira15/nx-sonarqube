@@ -159,12 +159,6 @@ export async function getScannerOptions(
   lcovPaths: string,
   branch: string
 ): Promise<{ [option: string]: string }> {
-  let version = '';
-  if (options.projectVersion) {
-    version = options.projectVersion;
-  } else {
-    version = await projectPackageVersion(context);
-  }
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
     'sonar.javascript.lcov.reportPaths': lcovPaths,
@@ -174,7 +168,7 @@ export async function getScannerOptions(
     'sonar.password': process.env.SONAR_PASSWORD,
     'sonar.projectKey': options.projectKey,
     'sonar.projectName': options.projectName,
-    'sonar.projectVersion': version,
+    'sonar.projectVersion': await projectPackageVersion(context, options),
     'sonar.qualitygate.timeout': options.qualityGateTimeout,
     'sonar.qualitygate.wait': String(options.qualityGate),
     'sonar.scm.provider': 'git',
@@ -225,8 +219,12 @@ function combineOptions(
 }
 
 export async function projectPackageVersion(
-  context: ExecutorContext
+  context: ExecutorContext,
+  options: ScanExecutorSchema
 ): Promise<string> {
+  if (options.projectVersion) {
+    return options.projectVersion;
+  }
   const projectName = context.projectName;
   try {
     const projectPackagePath = context.workspace.projects[projectName].root;
