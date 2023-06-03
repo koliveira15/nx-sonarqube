@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Build Application
-        run: npx nx build my-app
+        run: npx nx build nx-sonarqube
 
       - name: Publish Application
         run: npm publish --access public --tag ${{ github.ref }} --new-version ${{ github.event.inputs.version }}
