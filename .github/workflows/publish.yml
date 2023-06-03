@@ -1,0 +1,35 @@
+name: Build and Publish Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Semantic version'
+        required: true
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npx nx build my-app
+
+      - name: Publish Application
+        run: npm publish --access public --tag ${{ github.ref }} --new-version ${{ github.event.inputs.version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
