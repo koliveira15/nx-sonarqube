@@ -29,9 +29,6 @@ jobs:
       - name: Build Plugin
         run: npx nx build nx-sonarqube
 
-      - name: NPM Version
-        run: npm version ${{ github.event.inputs.version }}
-
       - name: Publish Application
         run: |
           cd dist/packages/nx-sonarqube
