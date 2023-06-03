@@ -26,10 +26,16 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Application
+      - name: Build Plugin
         run: npx nx build nx-sonarqube
 
+      - name: NPM Version
+        run: npm version ${{ github.event.inputs.version }}
+
       - name: Publish Application
-        run: npm publish dist/packages/nx-sonarqube --access public --tag ${{ github.event.inputs.version }}
+        run: |
+          cd dist/packages/nx-sonarqube
+          npm version ${{ github.event.inputs.version }}
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
