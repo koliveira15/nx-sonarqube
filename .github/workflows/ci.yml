@@ -13,6 +13,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 16, 18, 20 ]
     steps:
       - uses: actions/checkout@v3
         name: Checkout [Pull Request]
@@ -30,10 +33,10 @@ jobs:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
 
-      - name: Use Node.js
+      - name: Use Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
-          node-version: 18.14.0
+          node-version: ${{ matrix.node }}
           cache: 'npm'
       - run: npm ci
       - run: npx nx affected --target=lint
