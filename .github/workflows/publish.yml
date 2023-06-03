@@ -30,6 +30,6 @@ jobs:
         run: npx nx build nx-sonarqube
 
       - name: Publish Application
-        run: npm publish dist/packages/nx-sonarqube --access public --tag ${{ github.ref }} --new-version ${{ github.event.inputs.version }}
+      - run: cd dist/packages/nx-sonarqube && npm publish --access public --tag ${{ github.ref }} --new-version ${{ github.event.inputs.version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
