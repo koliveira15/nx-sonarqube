@@ -1,5 +1,5 @@
 import sonarScanExecutor from './executor';
-import { DependencyType, ExecutorContext, ProjectGraph } from '@nrwl/devkit';
+import {DependencyType, ExecutorContext, ProjectGraph, readJsonFile} from '@nrwl/devkit' ;
 import * as fs from 'fs';
 import * as fsPromise from 'fs/promises';
 import * as sonarQubeScanner from 'sonarqube-scanner';
@@ -8,6 +8,7 @@ import { determinePaths, getScannerOptions } from './utils/utils';
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
 class MockError extends Error {}
+
 jest.mock('@nrwl/devkit', () => ({
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   ...jest.requireActual<any>('@nrwl/devkit'),
@@ -17,6 +18,11 @@ jest.mock('@nrwl/devkit', () => ({
   createProjectGraphAsync: jest
     .fn()
     .mockImplementation(async () => projectGraph),
+  readJsonFile: jest.fn().mockImplementation(() => {
+    throw new MockError("not implemented for this test")
+  })
+
+
 }));
 
 jest.mock('sonarqube-scanner');
@@ -206,6 +212,7 @@ describe('Scan Executor', () => {
       moduleFileExtensions: ['ts', 'js', 'html', 'json'],
       coverageDirectory: '../../coverage/apps/app1',
     };`;
+    (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockReset()
   });
 
   afterEach(() => {
@@ -248,6 +255,7 @@ describe('Scan Executor', () => {
 
   it('should scan project and dependencies & skip projects with no test target', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
@@ -339,8 +347,6 @@ describe('Scan Executor', () => {
   });
 
   it('should override environment variable over options over extra ', async () => {
-    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-
     jest
       .spyOn(fsPromise, 'readFile')
       .mockResolvedValue(new Buffer(defaultPackageJson));
@@ -348,7 +354,7 @@ describe('Scan Executor', () => {
     process.env['SONAR_BRANCH'] = 'main';
     process.env['SONAR_VERBOSE'] = 'true';
 
-    const output = await getScannerOptions(
+    const output = getScannerOptions(
       context,
       {
         hostUrl: 'url',
@@ -376,16 +382,15 @@ describe('Scan Executor', () => {
     const packageJson = {
       version: '1.1.1',
     };
-
-    jest.spyOn(fsPromise, 'readFile').mockImplementation(async (path) => {
-      if (path == 'apps/app1/package.json') {
-        return new Buffer(JSON.stringify(packageJson));
+    (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockImplementation((p, options) => {
+      if (p == 'apps/app1/package.json') {
+        return packageJson ;
       }
       throw new MockError(
-        `mocked Implementation expected apps/app1/package.json. provided path:${path}`
+        `mocked Implementation expected apps/app1/package.json. provided path:${p}`
       );
-    });
-    const output = await getScannerOptions(
+    })
+    const output = getScannerOptions(
       context,
       {
         hostUrl: 'url',
@@ -410,16 +415,15 @@ describe('Scan Executor', () => {
     const packageJson = {
       version: '2.1.2',
     };
-
-    jest.spyOn(fsPromise, 'readFile').mockImplementation(async (path) => {
-      if (path != 'package.json') {
+    (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockImplementation((p, options) => {
+      if (p != 'package.json') {
         throw new MockError(
-          `mocked expecting a package.json as path. given path:${path}`
+          `mocked expecting a package.json as path. given path:${p}`
         );
       }
-      return new Buffer(JSON.stringify(packageJson));
-    });
-    const output = await getScannerOptions(
+      return packageJson;
+    })
+    const output = getScannerOptions(
       context,
       {
         hostUrl: 'url',
@@ -445,7 +449,7 @@ describe('Scan Executor', () => {
     jest
       .spyOn(fsPromise, 'readFile')
       .mockResolvedValue(new Buffer(JSON.stringify(defaultPackageJson)));
-    const output = await getScannerOptions(
+    const output = getScannerOptions(
       context,
       {
         hostUrl: 'url',
@@ -471,7 +475,7 @@ describe('Scan Executor', () => {
     jest
       .spyOn(fsPromise, 'readFile')
       .mockResolvedValue(new Buffer(JSON.stringify('{}')));
-    const output = await getScannerOptions(
+    const output = getScannerOptions(
       context,
       {
         hostUrl: 'url',
@@ -496,7 +500,7 @@ describe('Scan Executor', () => {
     jest.spyOn(fsPromise, 'readFile').mockImplementation(async (path) => {
       throw new MockError('this mock is supposed to fail on every call');
     });
-    const output = await getScannerOptions(
+    const output = getScannerOptions(
       context,
       {
         hostUrl: 'url',

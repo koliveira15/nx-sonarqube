@@ -7,14 +7,14 @@ import {
   joinPathFragments,
   logger,
   ProjectGraph,
-  readCachedProjectGraph,
+  readCachedProjectGraph, readJsonFile
 } from '@nrwl/devkit';
-import { readFileSync } from 'fs';
-import { readFile } from 'fs/promises';
+
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
+import {readFileIfExisting} from "nx/src/project-graph/file-utils";
 interface OptionMarshaller {
   Options(): { [option: string]: string };
 }
@@ -67,7 +67,7 @@ export async function determinePaths(
       options.skipImplicitDeps
         ? project.type === DependencyType.static
         : project.type === DependencyType.static ||
-          project.type === DependencyType.implicit
+        project.type === DependencyType.implicit
     )
     .forEach((dep) => {
       sources.push(dep.sourceRoot);
@@ -84,7 +84,7 @@ export async function determinePaths(
           );
         } else if (dep.testTarget.options.jestConfig) {
           const jestConfigPath = dep.testTarget.options.jestConfig;
-          const jestConfig = readFileSync(jestConfigPath, 'utf-8');
+          const jestConfig = readFileIfExisting(jestConfigPath);
           const ast = tsquery.ast(jestConfig);
           const nodes = tsquery(
             ast,
@@ -137,7 +137,7 @@ export async function scanner(
   if (options.branches) {
     branch = execSync('git rev-parse --abbrev-ref HEAD').toString();
   }
-  const scannerOptions = await getScannerOptions(
+  const scannerOptions = getScannerOptions(
     context,
     options,
     paths.sources,
@@ -152,13 +152,13 @@ export async function scanner(
     success: success,
   };
 }
-export async function getScannerOptions(
+export function getScannerOptions(
   context: ExecutorContext,
   options: ScanExecutorSchema,
   sources: string,
   lcovPaths: string,
   branch: string
-): Promise<{ [option: string]: string }> {
+):{ [option: string]: string } {
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
     'sonar.javascript.lcov.reportPaths': lcovPaths,
@@ -168,7 +168,7 @@ export async function getScannerOptions(
     'sonar.password': process.env.SONAR_PASSWORD,
     'sonar.projectKey': options.projectKey,
     'sonar.projectName': options.projectName,
-    'sonar.projectVersion': await projectPackageVersion(context, options),
+    'sonar.projectVersion': projectPackageVersion(context, options),
     'sonar.qualitygate.timeout': options.qualityGateTimeout,
     'sonar.qualitygate.wait': String(options.qualityGate),
     'sonar.scm.provider': 'git',
@@ -218,48 +218,44 @@ function combineOptions(
   };
 }
 
-export async function projectPackageVersion(
+export function projectPackageVersion(
   context: ExecutorContext,
   options: ScanExecutorSchema
-): Promise<string> {
-  if (options.projectVersion) {
-    return options.projectVersion;
-  }
+): string {
   const projectName = context.projectName;
-  try {
-    const projectPackagePath = context.workspace.projects[projectName].root;
-    const packageJson = JSON.parse(
-      (await readFile(`${projectPackagePath}/package.json`)).toString()
+  let version = ''
+  if (options.projectVersion) {
+    version =  options.projectVersion;
+  } else {
+    version = getPackageJsonVersion(context.workspace.projects[projectName].root)
+  }
+  if (!version) {
+    logger.warn(
+      `could not resolve project:${projectName}, trying to use root project version`
     );
-    const version = packageJson.version;
-    if (version) {
-      logger.debug(
-        `resolved project:${projectName} package version:${version}`
-      );
-      return version;
-    }
-  } catch (e) {
-    logger.debug(e);
+    version = getPackageJsonVersion()
   }
-  logger.warn(
-    `could not resolve project:${projectName}, trying to use root project version`
-  );
+  if (!version) {
+    logger.warn(
+      `root project doesn't have a package json version. no version will be used for ${projectName}`
+    );
+  }
+  return version
+}
+function getPackageJsonVersion(dir = "" ) : string {
+  let version = ""
   try {
-    const packageJson = JSON.parse((await readFile(`package.json`)).toString());
-    const version = packageJson.version;
+    const packageJson = readJsonFile(joinPathFragments(dir,'package.json'))
+    version = packageJson.version;
     if (version) {
       logger.debug(
-        `resolved project:${projectName} from root. root package version:${version}`
+        `resolved package json from ${dir}, package version:${version}`
       );
-      return version;
     }
   } catch (e) {
-    logger.error(e);
+    logger.debug(e)
   }
-  logger.warn(
-    `root project doesn't have a package json version. no version will be used for ${projectName}`
-  );
-  return '';
+  return version
 }
 function collectDependencies(
   projectGraph: ProjectGraph,
