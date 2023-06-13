@@ -7,14 +7,14 @@ import {
   joinPathFragments,
   logger,
   ProjectGraph,
-  readCachedProjectGraph, readJsonFile
-} from '@nrwl/devkit';
-
+  readCachedProjectGraph,
+  readJsonFile,
+} from '@nx/devkit';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
-import {readFileIfExisting} from "nx/src/project-graph/file-utils";
+import { readFileSync } from 'fs';
 interface OptionMarshaller {
   Options(): { [option: string]: string };
 }
@@ -40,7 +40,7 @@ class EnvMarshaller implements OptionMarshaller {
       .filter((e) => e.startsWith('SONAR'))
       .reduce((option, env) => {
         let sonarEnv = env.toLowerCase();
-        sonarEnv = sonarEnv.replace('_', '.');
+        sonarEnv = sonarEnv.replace(/_/g, '.');
         option[sonarEnv] = process.env[env];
         return option;
       }, {});
@@ -67,7 +67,7 @@ export async function determinePaths(
       options.skipImplicitDeps
         ? project.type === DependencyType.static
         : project.type === DependencyType.static ||
-        project.type === DependencyType.implicit
+          project.type === DependencyType.implicit
     )
     .forEach((dep) => {
       sources.push(dep.sourceRoot);
@@ -84,7 +84,8 @@ export async function determinePaths(
           );
         } else if (dep.testTarget.options.jestConfig) {
           const jestConfigPath = dep.testTarget.options.jestConfig;
-          const jestConfig = readFileIfExisting(jestConfigPath);
+
+          const jestConfig = readFileSync(jestConfigPath, 'utf-8');
           const ast = tsquery.ast(jestConfig);
           const nodes = tsquery(
             ast,
@@ -158,7 +159,7 @@ export function getScannerOptions(
   sources: string,
   lcovPaths: string,
   branch: string
-):{ [option: string]: string } {
+): { [option: string]: string } {
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
     'sonar.javascript.lcov.reportPaths': lcovPaths,
@@ -218,44 +219,62 @@ function combineOptions(
   };
 }
 
+// export function projectPackageVersion(
+//   context: ExecutorContext,
+//   options: ScanExecutorSchema
+// ): string {
+//   const projectName = context.projectName;
+//   let version = ''
+//   if (options.projectVersion) {
+//     version =  options.projectVersion;
+//   } else {
+//     version = getPackageJsonVersion(context.workspace.projects[projectName].root)
+//     if (!version) {
+//       logger.debug(
+//         `could not resolve project:${projectName}, trying to use root project version`
+//       );
+//       version = getPackageJsonVersion()
+//     }
+//   }
+//
+//   if (!version) {
+//     logger.debug(
+//       `root project doesn't have a package json version. no version will be used for ${projectName}`
+//     );
+//   }
+//   return version
+// }
 export function projectPackageVersion(
   context: ExecutorContext,
   options: ScanExecutorSchema
 ): string {
   const projectName = context.projectName;
-  let version = ''
-  if (options.projectVersion) {
-    version =  options.projectVersion;
-  } else {
-    version = getPackageJsonVersion(context.workspace.projects[projectName].root)
+  let version = options.projectVersion;
+  if (version) {
+    return version;
   }
-  if (!version) {
-    logger.warn(
-      `could not resolve project:${projectName}, trying to use root project version`
-    );
-    version = getPackageJsonVersion()
+  version = getPackageJsonVersion(context.workspace.projects[projectName].root);
+  if (version) {
+    return version;
   }
-  if (!version) {
-    logger.warn(
-      `root project doesn't have a package json version. no version will be used for ${projectName}`
-    );
-  }
-  return version
+  version = getPackageJsonVersion();
+  return version;
 }
-function getPackageJsonVersion(dir = "" ) : string {
-  let version = ""
+function getPackageJsonVersion(dir = ''): string {
+  let version = '';
   try {
-    const packageJson = readJsonFile(joinPathFragments(dir,'package.json'))
+    const packageJson = readJsonFile(joinPathFragments(dir, 'package.json'));
     version = packageJson.version;
-    if (version) {
-      logger.debug(
-        `resolved package json from ${dir}, package version:${version}`
-      );
+    if (!version) {
+      version = '';
     }
+    logger.debug(
+      `resolved package json from ${dir}, package version:${version}`
+    );
   } catch (e) {
-    logger.debug(e)
+    logger.debug(e);
   }
-  return version
+  return version;
 }
 function collectDependencies(
   projectGraph: ProjectGraph,

@@ -1,17 +1,21 @@
 import sonarScanExecutor from './executor';
-import {DependencyType, ExecutorContext, ProjectGraph, readJsonFile} from '@nrwl/devkit' ;
-import * as fs from 'fs';
-import * as fsPromise from 'fs/promises';
+import {
+  DependencyType,
+  ExecutorContext,
+  ProjectGraph,
+  readJsonFile,
+} from '@nx/devkit';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import * as childProcess from 'child_process';
+import * as fs from 'fs';
 import { determinePaths, getScannerOptions } from './utils/utils';
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
 class MockError extends Error {}
 
-jest.mock('@nrwl/devkit', () => ({
+jest.mock('@nx/devkit', () => ({
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  ...jest.requireActual<any>('@nrwl/devkit'),
+  ...jest.requireActual<any>('@nx/devkit'),
   readCachedProjectGraph: jest.fn().mockImplementation(() => {
     throw new Error('readCachedProjectGraph error');
   }),
@@ -19,10 +23,8 @@ jest.mock('@nrwl/devkit', () => ({
     .fn()
     .mockImplementation(async () => projectGraph),
   readJsonFile: jest.fn().mockImplementation(() => {
-    throw new MockError("not implemented for this test")
-  })
-
-
+    throw new MockError('not implemented for this test');
+  }),
 }));
 
 jest.mock('sonarqube-scanner');
@@ -56,7 +58,7 @@ describe('Scan Executor', () => {
             sourceRoot: 'libs/lib1/src',
             targets: {
               test: {
-                executor: '@nrwl/jest:jest',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -68,7 +70,7 @@ describe('Scan Executor', () => {
             sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
-                executor: '@nrwl/jest:jest',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -80,7 +82,7 @@ describe('Scan Executor', () => {
             sourceRoot: 'libs/lib3/src',
             targets: {
               test: {
-                executor: '@nrwl/jest:jest',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -135,6 +137,8 @@ describe('Scan Executor', () => {
           name: 'app1',
           type: 'app',
           data: {
+            root: 'apps/app1',
+            files: [],
             sourceRoot: 'apps/app1/src',
             targets: {
               test: {
@@ -150,6 +154,8 @@ describe('Scan Executor', () => {
           name: 'lib1',
           type: 'lib',
           data: {
+            root: 'libs/lib1',
+            files: [],
             sourceRoot: 'libs/lib1/src',
             targets: {
               test: {
@@ -165,6 +171,8 @@ describe('Scan Executor', () => {
           name: 'lib2',
           type: 'lib',
           data: {
+            root: 'libs/lib2',
+            files: [],
             sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
@@ -180,6 +188,8 @@ describe('Scan Executor', () => {
           name: 'lib3',
           type: 'lib',
           data: {
+            root: 'libs/lib3',
+            files: [],
             sourceRoot: 'libs/lib3/src',
             targets: {
               test: {
@@ -212,7 +222,7 @@ describe('Scan Executor', () => {
       moduleFileExtensions: ['ts', 'js', 'html', 'json'],
       coverageDirectory: '../../coverage/apps/app1',
     };`;
-    (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockReset()
+    (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockReset();
   });
 
   afterEach(() => {
@@ -255,7 +265,6 @@ describe('Scan Executor', () => {
 
   it('should scan project and dependencies & skip projects with no test target', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
@@ -292,6 +301,7 @@ describe('Scan Executor', () => {
 
   it('should scan project and dependencies & skip projects with no coverageDirectory', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue('');
+
     sonarQubeScanner.mockResolvedValue(true);
 
     const output = await sonarScanExecutor(
@@ -347,11 +357,14 @@ describe('Scan Executor', () => {
   });
 
   it('should override environment variable over options over extra ', async () => {
-    jest
-      .spyOn(fsPromise, 'readFile')
-      .mockResolvedValue(new Buffer(defaultPackageJson));
+    (
+      readJsonFile as jest.MockedFunction<typeof readJsonFile>
+    ).mockImplementation(() => {
+      return {};
+    });
     sonarQubeScanner.async.mockResolvedValue(true);
     process.env['SONAR_BRANCH'] = 'main';
+    process.env['SONAR_LOG_LEVEL_EXTENDED'] = 'DEBUG';
     process.env['SONAR_VERBOSE'] = 'true';
 
     const output = getScannerOptions(
@@ -376,20 +389,23 @@ describe('Scan Executor', () => {
     expect(output['sonar.branch']).toBe('main');
     expect(output['sonar.verbose']).toBe('true');
     expect(output['sonar.log.level']).toBe('DEBUG');
+    expect(output['sonar.log.level.extended']).toBe('DEBUG');
     expect(output['sonar.test.inclusions']).toBe('include');
   });
   it('should return app package json', async () => {
     const packageJson = {
       version: '1.1.1',
     };
-    (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockImplementation((p, options) => {
+    (
+      readJsonFile as jest.MockedFunction<typeof readJsonFile>
+    ).mockImplementation((p, options) => {
       if (p == 'apps/app1/package.json') {
-        return packageJson ;
+        return packageJson;
       }
       throw new MockError(
         `mocked Implementation expected apps/app1/package.json. provided path:${p}`
       );
-    })
+    });
     const output = getScannerOptions(
       context,
       {
@@ -415,14 +431,16 @@ describe('Scan Executor', () => {
     const packageJson = {
       version: '2.1.2',
     };
-    (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockImplementation((p, options) => {
+    (
+      readJsonFile as jest.MockedFunction<typeof readJsonFile>
+    ).mockImplementation((p, options) => {
       if (p != 'package.json') {
         throw new MockError(
           `mocked expecting a package.json as path. given path:${p}`
         );
       }
       return packageJson;
-    })
+    });
     const output = getScannerOptions(
       context,
       {
@@ -446,9 +464,11 @@ describe('Scan Executor', () => {
   });
   it('should return options version', async () => {
     const packageVersion = '3.3.3';
-    jest
-      .spyOn(fsPromise, 'readFile')
-      .mockResolvedValue(new Buffer(JSON.stringify(defaultPackageJson)));
+    (
+      readJsonFile as jest.MockedFunction<typeof readJsonFile>
+    ).mockImplementation(() => {
+      return JSON.parse(defaultPackageJson);
+    });
     const output = getScannerOptions(
       context,
       {
@@ -472,9 +492,9 @@ describe('Scan Executor', () => {
     expect(output['sonar.projectVersion']).toBe(packageVersion);
   });
   it('should return no version', async () => {
-    jest
-      .spyOn(fsPromise, 'readFile')
-      .mockResolvedValue(new Buffer(JSON.stringify('{}')));
+    (
+      readJsonFile as jest.MockedFunction<typeof readJsonFile>
+    ).mockImplementation(() => JSON.parse('{}'));
     const output = getScannerOptions(
       context,
       {
@@ -497,7 +517,9 @@ describe('Scan Executor', () => {
     expect(output['sonar.projectVersion']).toBe('');
   });
   it('should return no version 2', async () => {
-    jest.spyOn(fsPromise, 'readFile').mockImplementation(async (path) => {
+    (
+      readJsonFile as jest.MockedFunction<typeof readJsonFile>
+    ).mockImplementation((path, options) => {
       throw new MockError('this mock is supposed to fail on every call');
     });
     const output = getScannerOptions(
