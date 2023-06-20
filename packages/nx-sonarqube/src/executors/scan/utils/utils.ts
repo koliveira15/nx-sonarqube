@@ -219,31 +219,6 @@ function combineOptions(
   };
 }
 
-// export function projectPackageVersion(
-//   context: ExecutorContext,
-//   options: ScanExecutorSchema
-// ): string {
-//   const projectName = context.projectName;
-//   let version = ''
-//   if (options.projectVersion) {
-//     version =  options.projectVersion;
-//   } else {
-//     version = getPackageJsonVersion(context.workspace.projects[projectName].root)
-//     if (!version) {
-//       logger.debug(
-//         `could not resolve project:${projectName}, trying to use root project version`
-//       );
-//       version = getPackageJsonVersion()
-//     }
-//   }
-//
-//   if (!version) {
-//     logger.debug(
-//       `root project doesn't have a package json version. no version will be used for ${projectName}`
-//     );
-//   }
-//   return version
-// }
 export function projectPackageVersion(
   context: ExecutorContext,
   options: ScanExecutorSchema
