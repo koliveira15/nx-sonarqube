@@ -8,12 +8,13 @@ import {
   logger,
   ProjectGraph,
   readCachedProjectGraph,
+  readJsonFile,
 } from '@nx/devkit';
-import { readFileSync } from 'fs';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { readFileSync } from 'fs';
 interface OptionMarshaller {
   Options(): { [option: string]: string };
 }
@@ -83,6 +84,7 @@ export async function determinePaths(
           );
         } else if (dep.testTarget.options.jestConfig) {
           const jestConfigPath = dep.testTarget.options.jestConfig;
+
           const jestConfig = readFileSync(jestConfigPath, 'utf-8');
           const ast = tsquery.ast(jestConfig);
           const nodes = tsquery(
@@ -137,6 +139,7 @@ export async function scanner(
     branch = execSync('git rev-parse --abbrev-ref HEAD').toString();
   }
   const scannerOptions = getScannerOptions(
+    context,
     options,
     paths.sources,
     paths.lcovPaths,
@@ -151,6 +154,7 @@ export async function scanner(
   };
 }
 export function getScannerOptions(
+  context: ExecutorContext,
   options: ScanExecutorSchema,
   sources: string,
   lcovPaths: string,
@@ -165,7 +169,7 @@ export function getScannerOptions(
     'sonar.password': process.env.SONAR_PASSWORD,
     'sonar.projectKey': options.projectKey,
     'sonar.projectName': options.projectName,
-    'sonar.projectVersion': options.projectVersion,
+    'sonar.projectVersion': projectPackageVersion(context, options),
     'sonar.qualitygate.timeout': options.qualityGateTimeout,
     'sonar.qualitygate.wait': String(options.qualityGate),
     'sonar.scm.provider': 'git',
@@ -213,6 +217,39 @@ function combineOptions(
     ...scannerOptions,
     ...envOptions.Options(),
   };
+}
+
+export function projectPackageVersion(
+  context: ExecutorContext,
+  options: ScanExecutorSchema
+): string {
+  const projectName = context.projectName;
+  let version = options.projectVersion;
+  if (version) {
+    return version;
+  }
+  version = getPackageJsonVersion(context.workspace.projects[projectName].root);
+  if (version) {
+    return version;
+  }
+  version = getPackageJsonVersion();
+  return version;
+}
+function getPackageJsonVersion(dir = ''): string {
+  let version = '';
+  try {
+    const packageJson = readJsonFile(joinPathFragments(dir, 'package.json'));
+    version = packageJson.version;
+    if (!version) {
+      version = '';
+    }
+    logger.debug(
+      `resolved package json from ${dir}, package version:${version}`
+    );
+  } catch (e) {
+    logger.debug(e);
+  }
+  return version;
 }
 function collectDependencies(
   projectGraph: ProjectGraph,
