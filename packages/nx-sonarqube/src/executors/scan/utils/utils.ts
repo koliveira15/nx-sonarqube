@@ -177,7 +177,7 @@ export function getScannerOptions(
     'sonar.sourceEncoding': 'UTF-8',
     'sonar.tests': sources,
     'sonar.test.inclusions': options.testInclusions,
-    'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
+    'sonar.typescript.tsconfigPath': options.tsConfig,
     'sonar.verbose': String(options.verbose),
   };
   if (options.branches) {

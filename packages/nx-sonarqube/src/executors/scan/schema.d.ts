@@ -10,6 +10,7 @@ export interface ScanExecutorSchema {
   qualityGateTimeout?: string;
   skipImplicitDeps?: boolean;
   testInclusions?: string;
+  tsConfig?: string;
   verbose?: boolean;
   extra?: { [option: string]: string };
 }
