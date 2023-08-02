@@ -56,6 +56,11 @@
       "type": "string",
       "default": "**/*.spec.ts"
     },
+    "tsConfig": {
+      "description": "Path to tsconfig.json",
+      "type": "string",
+      "default": "tsconfig.base.json"
+    },
     "verbose": {
       "description": "Add more detail to both client and server-side analysis logs",
       "type": "boolean",
