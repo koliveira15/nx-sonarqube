@@ -35,12 +35,17 @@ class ExtraMarshaller implements OptionMarshaller {
   }
 }
 class EnvMarshaller implements OptionMarshaller {
+  private readonly normalizedOptionsName = {
+    ['sonar.projectversion']: 'sonar.projectVersion',
+  }
+
   Options(): { [p: string]: string } {
     return Object.keys(process.env)
       .filter((e) => e.startsWith('SONAR'))
       .reduce((option, env) => {
         let sonarEnv = env.toLowerCase();
         sonarEnv = sonarEnv.replace(/_/g, '.');
+        sonarEnv = this.normalizedOptionsName[sonarEnv] || sonarEnv;
         option[sonarEnv] = process.env[env];
         return option;
       }, {});

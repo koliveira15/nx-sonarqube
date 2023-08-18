@@ -226,6 +226,7 @@ describe('Scan Executor', () => {
   });
 
   afterEach(() => {
+    delete process.env['SONAR_PROJECTVERSION'];
     jest.clearAllMocks();
   });
 
@@ -490,6 +491,44 @@ describe('Scan Executor', () => {
     );
 
     expect(output['sonar.projectVersion']).toBe(packageVersion);
+  });
+  it('should return env variable version', async () => {
+    (
+      readJsonFile as jest.MockedFunction<typeof readJsonFile>
+    ).mockImplementation(() => {
+      return {};
+    });
+    sonarQubeScanner.async.mockResolvedValue(true);
+    process.env['SONAR_BRANCH'] = 'main';
+    process.env['SONAR_LOG_LEVEL_EXTENDED'] = 'DEBUG';
+    process.env['SONAR_VERBOSE'] = 'true';
+    process.env['SONAR_PROJECTVERSION'] = '1.1.1';
+
+    const output = getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        verbose: false,
+        projectKey: 'key',
+        qualityGate: true,
+        organization: 'org',
+        testInclusions: 'include',
+        extra: {
+          'sonar.test.inclusions': 'dontInclude',
+          'sonar.log.level': 'DEBUG',
+        },
+      },
+      'src/',
+      'coverage/apps',
+      ''
+    );
+
+    expect(output['sonar.branch']).toBe('main');
+    expect(output['sonar.verbose']).toBe('true');
+    expect(output['sonar.log.level']).toBe('DEBUG');
+    expect(output['sonar.log.level.extended']).toBe('DEBUG');
+    expect(output['sonar.test.inclusions']).toBe('include');
+    expect(output['sonar.projectVersion']).toBe('1.1.1');
   });
   it('should return no version', async () => {
     (
