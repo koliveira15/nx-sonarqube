@@ -1,11 +1,16 @@
 {
   "name": "@koliveira15/nx-sonarqube",
+  "description": "A Nx plugin that scans projects using SonarQube / SonarCloud.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/koliveira15/nx-sonarqube.git"
+    "url": "https://github.com/koliveira15/nx-sonarqube.git",
+    "directory": "packages/nx-sonarqube"
   },
   "version": "1.0.0",
   "main": "src/index.js",
   "generators": "./generators.json",
-  "executors": "./executors.json"
+  "executors": "./executors.json",
+  "peerDependencies": {
+    "@nx/devkit": "16.7.4"
+  }
 }
