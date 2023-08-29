@@ -138,7 +138,6 @@ describe('Scan Executor', () => {
           type: 'app',
           data: {
             root: 'apps/app1',
-            files: [],
             sourceRoot: 'apps/app1/src',
             targets: {
               test: {
@@ -155,7 +154,6 @@ describe('Scan Executor', () => {
           type: 'lib',
           data: {
             root: 'libs/lib1',
-            files: [],
             sourceRoot: 'libs/lib1/src',
             targets: {
               test: {
@@ -172,7 +170,6 @@ describe('Scan Executor', () => {
           type: 'lib',
           data: {
             root: 'libs/lib2',
-            files: [],
             sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
@@ -189,7 +186,6 @@ describe('Scan Executor', () => {
           type: 'lib',
           data: {
             root: 'libs/lib3',
-            files: [],
             sourceRoot: 'libs/lib3/src',
             targets: {
               test: {
@@ -398,7 +394,7 @@ describe('Scan Executor', () => {
     };
     (
       readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation((p, options) => {
+    ).mockImplementation((p) => {
       if (p == 'apps/app1/package.json') {
         return packageJson;
       }
@@ -433,7 +429,7 @@ describe('Scan Executor', () => {
     };
     (
       readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation((p, options) => {
+    ).mockImplementation((p) => {
       if (p != 'package.json') {
         throw new MockError(
           `mocked expecting a package.json as path. given path:${p}`
@@ -519,7 +515,7 @@ describe('Scan Executor', () => {
   it('should return no version 2', async () => {
     (
       readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation((path, options) => {
+    ).mockImplementation(() => {
       throw new MockError('this mock is supposed to fail on every call');
     });
     const output = getScannerOptions(
