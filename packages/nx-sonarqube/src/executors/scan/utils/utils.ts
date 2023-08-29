@@ -15,6 +15,7 @@ import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { readFileSync } from 'fs';
+
 interface OptionMarshaller {
   Options(): { [option: string]: string };
 }
@@ -64,10 +65,7 @@ export async function determinePaths(
 
   deps.workspaceLibraries
     .filter((project) =>
-      options.skipImplicitDeps
-        ? project.type === DependencyType.static
-        : project.type === DependencyType.static ||
-          project.type === DependencyType.implicit
+      options.skipImplicitDeps ? project.type !== DependencyType.implicit : true
     )
     .forEach((dep) => {
       sources.push(dep.sourceRoot);
