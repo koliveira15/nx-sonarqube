@@ -35,6 +35,6 @@ jobs:
           cd dist/packages/nx-sonarqube
           npm version ${{ github.event.inputs.version }}
           npm publish --access public
-          git push origin --tag ${{ github.event.inputs.version }}
+          git push origin ${{ github.event.inputs.version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
