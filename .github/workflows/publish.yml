@@ -21,7 +21,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
         run: npm ci
@@ -34,5 +35,7 @@ jobs:
           cd dist/packages/nx-sonarqube
           npm version ${{ github.event.inputs.version }}
           npm publish --access public
+          git tag ${{ github.event.inputs.version }}
+          git push origin ${{ github.event.inputs.version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
