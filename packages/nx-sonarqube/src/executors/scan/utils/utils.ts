@@ -245,7 +245,7 @@ function getPackageJsonVersion(dir = ''): string {
       `resolved package json from ${dir}, package version:${version}`
     );
   } catch (e) {
-    logger.debug(e);
+    logger.debug(`Unable to open file ${joinPathFragments(dir, 'package.json')}`)
   }
   return version;
 }
