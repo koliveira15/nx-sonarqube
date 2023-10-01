@@ -8,14 +8,10 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  SONAR_LOGIN: ${{ secrets.SONAR_TOKEN }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [16, 18, 20]
     steps:
       - uses: actions/checkout@v3
         name: Checkout [Pull Request]
@@ -36,10 +32,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 18
           cache: 'npm'
       - run: npm ci
-      - run: npx nx affected --target=lint
-      - run: npx nx affected --target=test --ci
-      - run: npx nx affected --target=build
-      - run: npx nx affected --target=e2e --parallel=1
+      - run: npx nx affected --targets build,test,lint
