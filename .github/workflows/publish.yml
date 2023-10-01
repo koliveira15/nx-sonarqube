@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
@@ -29,6 +29,11 @@ jobs:
 
       - name: Build Plugin
         run: npx nx build nx-sonarqube
+
+      - name: E2E
+        run: npx nx e2e nx-sonarqube-e2e
+        env:
+          SONAR_LOGIN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Publish Plugin
         run: |
