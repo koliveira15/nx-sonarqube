@@ -5,5 +5,4 @@ describe('nx-sonarqube e2e', () => {
     const result = execSync('npx nx sonar nx-sonarqube-e2e').toString();
     expect(result).toContain('QUALITY GATE STATUS: PASSED');
   }, 300000);
-  console.log('test')
 });
