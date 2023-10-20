@@ -11,6 +11,7 @@ import {
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
+import _ from "lodash";
 
 export declare type WorkspaceLibrary = {
   name: string;
@@ -127,7 +128,13 @@ export async function scanner(
 
   await sonarQubeScanner.async({
     serverUrl: options.hostUrl,
-    options: scannerOptions,
+    options: _.mapValues(scannerOptions, (option: string | boolean): string| boolean => {
+      if (_.isString(option)) {
+        return `"${option}"`;
+      }
+
+      return option;
+    }),
   });
 }
 
