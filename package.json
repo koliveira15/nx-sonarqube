@@ -10,7 +10,8 @@
     "build": "nx build nx-sonarqube",
     "test": "nx test nx-sonarqube",
     "pre-commit": "lint-staged",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "publish": "cd packages/nx-sonarqube && npm publish"
   },
   "private": true,
   "devDependencies": {
