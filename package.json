@@ -50,6 +50,12 @@
     "sonarqube-scanner": "3.1.0",
     "tslib": "2.3.0"
   },
+  "optionalDependencies": {
+    "@nx/nx-darwin-arm64": "17.1.2",
+    "@nx/nx-darwin-x64": "17.1.2",
+    "@nx/nx-linux-x64-gnu": "17.1.2",
+    "@nx/nx-win32-x64-msvc": "17.1.2"
+  },
   "lint-staged": {
     "*.{js,json,md,ts}": [
       "npx nx format:write --uncommitted"
