@@ -40,7 +40,7 @@ testem.log
 Thumbs.db
 
 # nx
-migrations.json
+/.nx/cache
 
 # Sonar
 .scannerwork
