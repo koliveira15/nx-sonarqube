@@ -10,7 +10,12 @@ export interface ScanExecutorSchema {
   qualityGateTimeout?: string;
   skipImplicitDeps?: boolean;
   testInclusions?: string;
-  tsConfig?: string;
   verbose?: boolean;
-  extra?: { [option: string]: string };
+  projectBaseDir?: string;
+  gitHubPullRequestSummaryComment?: boolean;
+  pullRequest?: boolean;
+  pullRequestProvider?: string;
+  pullRequestBranch?: string;
+  pullRequestKey?: string;
+  pullRequestBase?: string;
 }

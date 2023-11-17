@@ -1,5 +1,4 @@
 import { ScanExecutorSchema } from '../schema';
-
 import {
   createProjectGraphAsync,
   DependencyType,
@@ -8,17 +7,10 @@ import {
   logger,
   ProjectGraph,
   readCachedProjectGraph,
-  readJsonFile,
-} from '@nx/devkit';
-import { tsquery } from '@phenomnomnominal/tsquery';
+} from '@nrwl/devkit';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { readFileSync } from 'fs';
-
-interface OptionMarshaller {
-  Options(): { [option: string]: string };
-}
 
 export declare type WorkspaceLibrary = {
   name: string;
@@ -26,35 +18,17 @@ export declare type WorkspaceLibrary = {
   sourceRoot: string;
   testTarget?: TargetConfiguration;
 };
-class ExtraMarshaller implements OptionMarshaller {
-  private readonly options: { [option: string]: string };
-  constructor(options: { [option: string]: string }) {
-    this.options = options;
-  }
-  Options(): { [p: string]: string } {
-    return this.options;
-  }
-}
-class EnvMarshaller implements OptionMarshaller {
-  Options(): { [p: string]: string } {
-    return Object.keys(process.env)
-      .filter((e) => e.startsWith('SONAR'))
-      .reduce((option, env) => {
-        let sonarEnv = env.toLowerCase();
-        sonarEnv = sonarEnv.replace(/_/g, '.');
-        option[sonarEnv] = process.env[env];
-        return option;
-      }, {});
-  }
-}
 
-export async function determinePaths(
+async function determinePaths(
   options: ScanExecutorSchema,
   context: ExecutorContext
 ): Promise<{ lcovPaths: string; sources: string }> {
   const sources: string[] = [];
   const lcovPaths: string[] = [];
   const deps = await getDependentPackagesForProject(context.projectName);
+
+  logger.info(`Found ${deps.workspaceLibraries.length} workspace libraries depending on ${context.projectName}`)
+
   const projectConfiguration = context.workspace.projects[context.projectName];
   deps.workspaceLibraries.push({
     name: context.projectName,
@@ -64,51 +38,29 @@ export async function determinePaths(
   });
 
   deps.workspaceLibraries
-    .filter((project) =>
-      options.skipImplicitDeps ? project.type !== DependencyType.implicit : true
+    .filter((project):boolean =>
+      options.skipImplicitDeps
+        ? project.type === DependencyType.static
+        : project.type === DependencyType.static ||
+          project.type === DependencyType.implicit
     )
-    .forEach((dep) => {
+    .forEach((dep):void => {
       sources.push(dep.sourceRoot);
 
       if (dep.testTarget) {
-        if (dep.testTarget.options.coverageDirectory) {
-          lcovPaths.push(
-            joinPathFragments(
-              dep.testTarget.options.coverageDirectory
-                .replace(new RegExp(/'/g), '')
-                .replace(/^(?:\.\.\/)+/, ''),
-              'lcov.info'
-            )
-          );
-        } else if (dep.testTarget.options.jestConfig) {
-          const jestConfigPath = dep.testTarget.options.jestConfig;
-
-          const jestConfig = readFileSync(jestConfigPath, 'utf-8');
-          const ast = tsquery.ast(jestConfig);
-          const nodes = tsquery(
-            ast,
-            'Identifier[name="coverageDirectory"] ~ StringLiteral',
-            { visitAllChildren: true }
+        if (dep.testTarget.options.reportsDirectory) {
+          const lcovPath: string = joinPathFragments(
+            dep.testTarget.options.reportsDirectory
+              .replace(new RegExp(/'/g), '')
+              .replace(/^(?:\.\.\/)+/, ''),
+            'lcov.info'
           );
 
-          if (nodes.length) {
-            lcovPaths.push(
-              joinPathFragments(
-                nodes[0]
-                  .getText()
-                  .replace(new RegExp(/'/g), '')
-                  .replace(/^(?:\.\.\/)+/, ''),
-                'lcov.info'
-              )
-            );
-          } else {
-            logger.warn(
-              `Skipping ${context.projectName} as it does not have a coverageDirectory in ${jestConfigPath}`
-            );
-          }
+          logger.info(`Found a report file => ${lcovPath}`)
+          lcovPaths.push(lcovPath);
         } else {
           logger.warn(
-            `Skipping ${context.projectName} as it does not have a jestConfig`
+            `Skipping ${context.projectName} as it does not have a reportsDirectory`
           );
         }
       } else {
@@ -117,6 +69,7 @@ export async function determinePaths(
         );
       }
     });
+
   return Promise.resolve({
     lcovPaths: lcovPaths.join(','),
     sources: sources.join(','),
@@ -126,68 +79,58 @@ export async function determinePaths(
 export async function scanner(
   options: ScanExecutorSchema,
   context: ExecutorContext
-): Promise<{ success: boolean }> {
+) {
   const paths = await determinePaths(options, context);
 
   logger.log(`Included sources: ${paths.sources}`);
   if (!options.qualityGate) logger.warn(`Skipping quality gate check`);
 
-  let branch = '';
-  if (options.branches) {
-    branch = execSync('git rev-parse --abbrev-ref HEAD').toString();
-  }
-  const scannerOptions = getScannerOptions(
-    context,
-    options,
-    paths.sources,
-    paths.lcovPaths,
-    branch
-  );
-  const success = await sonarQubeScanner.async({
-    serverUrl: options.hostUrl,
-    options: scannerOptions,
-  });
-  return {
-    success: success,
-  };
-}
-export function getScannerOptions(
-  context: ExecutorContext,
-  options: ScanExecutorSchema,
-  sources: string,
-  lcovPaths: string,
-  branch: string
-): { [option: string]: string } {
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
-    'sonar.javascript.lcov.reportPaths': lcovPaths,
-    'sonar.language': 'ts',
+    'sonar.javascript.lcov.reportPaths': paths.lcovPaths,
     'sonar.login': process.env.SONAR_LOGIN,
     'sonar.organization': options.organization,
     'sonar.password': process.env.SONAR_PASSWORD,
     'sonar.projectKey': options.projectKey,
     'sonar.projectName': options.projectName,
-    'sonar.projectVersion': projectPackageVersion(context, options),
+    'sonar.projectVersion': options.projectVersion,
     'sonar.qualitygate.timeout': options.qualityGateTimeout,
     'sonar.qualitygate.wait': String(options.qualityGate),
-    'sonar.scm.provider': 'git',
-    'sonar.sources': sources,
+    'sonar.sources': paths.sources,
     'sonar.sourceEncoding': 'UTF-8',
-    'sonar.tests': sources,
+    'sonar.tests': paths.sources,
     'sonar.test.inclusions': options.testInclusions,
-    'sonar.typescript.tsconfigPath': options.tsConfig,
+    'sonar.typescript.tsconfigPath': 'tsconfig.base.json',
     'sonar.verbose': String(options.verbose),
+    'sonar.projectBaseDir': options.projectBaseDir,
   };
-  if (options.branches) {
-    scannerOptions['sonar.branch.name'] = branch;
+
+  if (options.pullRequest) {
+    scannerOptions = {
+      ...scannerOptions,
+      'sonar.pullrequest.github.summary_comment': String(options.gitHubPullRequestSummaryComment),
+      'sonar.pullrequest.provider': options.pullRequestProvider,
+      'sonar.pullrequest.branch': options.pullRequestBranch,
+      'sonar.pullrequest.key': options.pullRequestKey,
+      'sonar.pullrequest.base': options.pullRequestBase
+    }
   }
-  scannerOptions = combineOptions(
-    new ExtraMarshaller(options.extra),
-    new EnvMarshaller(),
-    scannerOptions
-  );
-  return scannerOptions;
+
+  if (options.branches) {
+    scannerOptions = {
+      'sonar.branch.name': execSync(
+        'git rev-parse --abbrev-ref HEAD'
+      ).toString(),
+      ...scannerOptions,
+    };
+  }
+
+  await sonarQubeScanner.async({
+    serverUrl: options.hostUrl,
+    options: scannerOptions,
+  });
 }
+
 async function getDependentPackagesForProject(name: string): Promise<{
   workspaceLibraries: WorkspaceLibrary[];
 }> {
@@ -205,50 +148,7 @@ async function getDependentPackagesForProject(name: string): Promise<{
     workspaceLibraries: [...workspaceLibraries.values()],
   });
 }
-function combineOptions(
-  extraOptions: ExtraMarshaller,
-  envOptions: EnvMarshaller,
-  scannerOptions: { [option: string]: string }
-): { [option: string]: string } {
-  return {
-    ...extraOptions.Options(),
-    ...scannerOptions,
-    ...envOptions.Options(),
-  };
-}
 
-export function projectPackageVersion(
-  context: ExecutorContext,
-  options: ScanExecutorSchema
-): string {
-  const projectName = context.projectName;
-  let version = options.projectVersion;
-  if (version) {
-    return version;
-  }
-  version = getPackageJsonVersion(context.workspace.projects[projectName].root);
-  if (version) {
-    return version;
-  }
-  version = getPackageJsonVersion();
-  return version;
-}
-function getPackageJsonVersion(dir = ''): string {
-  let version = '';
-  try {
-    const packageJson = readJsonFile(joinPathFragments(dir, 'package.json'));
-    version = packageJson.version;
-    if (!version) {
-      version = '';
-    }
-    logger.debug(
-      `resolved package json from ${dir}, package version:${version}`
-    );
-  } catch (e) {
-    logger.debug(`Unable to open file ${joinPathFragments(dir, 'package.json')}`)
-  }
-  return version;
-}
 function collectDependencies(
   projectGraph: ProjectGraph,
   name: string,
@@ -264,7 +164,7 @@ function collectDependencies(
   }
   seen.add(name);
 
-  (projectGraph.dependencies[name] ?? []).forEach((dependency) => {
+  (projectGraph.dependencies[name] ?? []).forEach((dependency): void => {
     if (!dependency.target.startsWith('npm:')) {
       dependencies.workspaceLibraries.set(dependency.target, {
         name: dependency.target,

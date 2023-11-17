@@ -1,16 +1,18 @@
 {
-  "name": "@koliveira15/nx-sonarqube",
-  "description": "A Nx plugin that scans projects using SonarQube / SonarCloud.",
+  "name": "@c0zen/nx-sonarqube",
   "repository": {
     "type": "git",
-    "url": "https://github.com/koliveira15/nx-sonarqube.git",
-    "directory": "packages/nx-sonarqube"
+    "url": "https://github.com/C0ZEN/nx-sonarqube.git"
   },
-  "version": "1.0.0",
+  "version": "2.8.0",
   "main": "src/index.js",
   "generators": "./generators.json",
   "executors": "./executors.json",
-  "peerDependencies": {
-    "@nx/devkit": "16.7.4"
-  }
+  "dependencies": {
+    "sonarqube-scanner": "^3.3.0",
+    "@phenomnomnominal/tsquery": "^5.0.1",
+    "tslib": "^2.6.2",
+    "lodash": "^4.17.21"
+  },
+  "private": false
 }

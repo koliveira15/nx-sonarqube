@@ -21,11 +21,11 @@
       "default": false
     },
     "exclusions": {
-      "description": "Files to exclude from coverage",
+      "description": "Files to exclude from coverage.",
       "type": "string"
     },
     "organization": {
-      "description": "Sonar organization",
+      "description": "Sonar organization.",
       "type": "string"
     },
     "projectName": {
@@ -47,7 +47,7 @@
       "default": "300"
     },
     "skipImplicitDeps": {
-      "description": "Skips adding implicit dependencies to the project graph analysis",
+      "description": "Skips adding implicit dependencies to the project graph analysis.",
       "type": "boolean",
       "default": false
     },
@@ -62,9 +62,44 @@
       "default": "tsconfig.base.json"
     },
     "verbose": {
-      "description": "Add more detail to both client and server-side analysis logs",
+      "description": "Add more detail to both client and server-side analysis logs.",
       "type": "boolean",
       "default": false
+    },
+    "projectBaseDir": {
+      "description": "Project base directory.",
+      "type": "string",
+      "default": ""
+    },
+    "gitHubPullRequestSummaryComment": {
+      "description": "Add GitHub Pull Requests comments.",
+      "type": "boolean",
+      "default": false
+    },
+    "pullRequest": {
+      "description": "Enable to modify the Pull Request settings.",
+      "type": "boolean",
+      "default": false
+    },
+    "pullRequestProvider": {
+      "description": "Pull Request provider.",
+      "type": "string",
+      "default": "GitHub"
+    },
+    "pullRequestBranch": {
+      "description": "Pull Request branch.",
+      "type": "string",
+      "default": ""
+    },
+    "pullRequestKey": {
+      "description": "Pull Request key.",
+      "type": "string",
+      "default": ""
+    },
+    "pullRequestBase": {
+      "description": "Pull Request base.",
+      "type": "string",
+      "default": ""
     }
   },
   "required": ["hostUrl", "projectKey"]
