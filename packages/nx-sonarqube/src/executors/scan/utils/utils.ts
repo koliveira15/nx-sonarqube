@@ -1,5 +1,4 @@
 import { ScanExecutorSchema } from '../schema';
-
 import {
   createProjectGraphAsync,
   DependencyType,
@@ -14,11 +13,13 @@ import { tsquery } from '@phenomnomnominal/tsquery';
 import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 
 interface OptionMarshaller {
   Options(): { [option: string]: string };
 }
+
+type Executor = '@nx/jest:jest' | '@nx/vite:test';
 
 export declare type WorkspaceLibrary = {
   name: string;
@@ -48,6 +49,27 @@ class EnvMarshaller implements OptionMarshaller {
   }
 }
 
+function getExecutor(executor: string): Executor {
+  if (executor === '@nx/vite:test') {
+    return '@nx/vite:test';
+  }
+
+  // Always fallback to the default executor: jest
+  return '@nx/jest:jest';
+}
+
+type CoverageDirectoryName = 'coverageDirectory' | 'reportsDirectory';
+
+function getCoverageDirectoryName(executor: Executor): CoverageDirectoryName {
+  if (executor === '@nx/vite:test') {
+    return 'reportsDirectory';
+  }
+
+  // Always fallback to the default coverage directory for the default executor: jest
+  return 'coverageDirectory';
+}
+
+
 export async function determinePaths(
   options: ScanExecutorSchema,
   context: ExecutorContext
@@ -71,18 +93,20 @@ export async function determinePaths(
       sources.push(dep.sourceRoot);
 
       if (dep.testTarget) {
-        if (dep.testTarget.options.coverageDirectory) {
+        const executor: Executor = getExecutor(dep.testTarget.executor);
+        const coverageDirectoryName: CoverageDirectoryName = getCoverageDirectoryName(executor);
+
+        if (dep.testTarget.options?.[coverageDirectoryName]) {
           lcovPaths.push(
             joinPathFragments(
-              dep.testTarget.options.coverageDirectory
+              dep.testTarget.options[coverageDirectoryName]
                 .replace(new RegExp(/'/g), '')
                 .replace(/^(?:\.\.\/)+/, ''),
               'lcov.info'
             )
           );
-        } else if (dep.testTarget.options.jestConfig) {
+        } else if (executor === '@nx/jest:jest' && dep.testTarget.options?.jestConfig) {
           const jestConfigPath = dep.testTarget.options.jestConfig;
-
           const jestConfig = readFileSync(jestConfigPath, 'utf-8');
           const ast = tsquery.ast(jestConfig);
           const nodes = tsquery(
@@ -106,6 +130,40 @@ export async function determinePaths(
               `Skipping ${context.projectName} as it does not have a coverageDirectory in ${jestConfigPath}`
             );
           }
+        } else if (executor === '@nx/vite:test') {
+          const configPath: string | undefined = getViteConfigPath(context.root, dep);
+
+          if (configPath === undefined) {
+            logger.warn(
+              `Skipping ${context.projectName} as we cannot find a vite config file`
+            );
+
+            return;
+          }
+
+          const config = readFileSync(configPath, 'utf-8');
+          const ast = tsquery.ast(config);
+          const nodes = tsquery(
+            ast,
+            'Identifier[name="reportsDirectory"] ~ StringLiteral',
+            { visitAllChildren: true }
+          );
+
+          if (nodes.length) {
+            lcovPaths.push(
+              joinPathFragments(
+                nodes[0]
+                  .getText()
+                  .replace(new RegExp(/'/g), '')
+                  .replace(/^(?:\.\.\/)+/, ''),
+                'lcov.info'
+              )
+            );
+          } else {
+            logger.warn(
+              `Skipping ${context.projectName} as it does not have a reportsDirectory in ${configPath}`
+            );
+          }
         } else {
           logger.warn(
             `Skipping ${context.projectName} as it does not have a jestConfig`
@@ -117,6 +175,7 @@ export async function determinePaths(
         );
       }
     });
+
   return Promise.resolve({
     lcovPaths: lcovPaths.join(','),
     sources: sources.join(','),
@@ -147,6 +206,7 @@ export async function scanner(
     serverUrl: options.hostUrl,
     options: scannerOptions,
   });
+
   return {
     success: success,
   };
@@ -277,4 +337,26 @@ function collectDependencies(
   });
 
   return dependencies;
+}
+
+export function normalizeViteConfigFilePathWithTree(
+  projectRoot: string,
+  configFilePath?: string
+): string | undefined {
+  return configFilePath && existsSync(configFilePath)
+    ? configFilePath
+    : existsSync(joinPathFragments(`${projectRoot}/vite.config.ts`))
+      ? joinPathFragments(`${projectRoot}/vite.config.ts`)
+      : existsSync(joinPathFragments(`${projectRoot}/vite.config.js`))
+        ? joinPathFragments(`${projectRoot}/vite.config.js`)
+        : undefined;
+}
+
+export function getViteConfigPath(
+  projectRoot: string,
+  dep: WorkspaceLibrary
+): string | undefined {
+  const viteConfigPath: string | undefined = dep.testTarget.options?.configFile;
+
+  return normalizeViteConfigFilePathWithTree(projectRoot, viteConfigPath);
 }
