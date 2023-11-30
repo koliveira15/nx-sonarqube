@@ -6,9 +6,8 @@ import {
   readJsonFile,
 } from '@nx/devkit';
 import * as sonarQubeScanner from 'sonarqube-scanner';
-import * as childProcess from 'child_process';
 import * as fs from 'fs';
-import { getScannerOptions } from './utils/utils';
+import { determinePaths } from './utils/utils';
 
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
@@ -33,7 +32,6 @@ jest.mock('sonarqube-scanner');
 
 describe('Scan Executor', (): void => {
   let jestConfig: string;
-  let defaultPackageJson: string;
 
   beforeEach((): void => {
     (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockReset();
@@ -204,10 +202,6 @@ describe('Scan Executor', (): void => {
         },
       },
     };
-    defaultPackageJson = `{
-    "version":"1.0.0"
-    }
-    `;
 
     jestConfig = `export default {
       displayName: 'app1',
@@ -229,39 +223,6 @@ describe('Scan Executor', (): void => {
     jest.clearAllMocks();
   });
 
-  it('should scan project and dependencies', async () => {
-    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
-
-    const output = await sonarScanExecutor(
-      {
-        hostUrl: 'url',
-        projectKey: 'key',
-        qualityGate: true,
-        skipImplicitDeps: true,
-      },
-      context
-    );
-    expect(output.success).toBe(true);
-  });
-
-  it('should scan project and dependencies with branch name', async () => {
-    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
-
-    jest.spyOn(childProcess, 'execSync').mockReturnValue('feature/my-branch');
-
-    const output = await sonarScanExecutor(
-      {
-        hostUrl: 'url',
-        projectKey: 'key',
-        branches: true,
-        qualityGate: true,
-      },
-      context
-    );
-    expect(output.success).toBe(true);
-  });
 
   it('should scan project and dependencies & skip projects with no test target', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
@@ -281,196 +242,80 @@ describe('Scan Executor', (): void => {
     expect(output.success).toBe(true);
   });
 
-  it('should override environment variable over options over extra ', async () => {
-    (
-      readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation(() => {
-      return {};
-    });
-    sonarQubeScanner.async.mockResolvedValue(true);
-    process.env['SONAR_BRANCH'] = 'main';
-    process.env['SONAR_LOG_LEVEL_EXTENDED'] = 'DEBUG';
-    process.env['SONAR_VERBOSE'] = 'true';
+  it('should scan project and dependencies & skip projects with no jestConfig', async () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+    sonarQubeScanner.mockResolvedValue(true);
 
-    const output = getScannerOptions(
-      context,
+    const newContext = { ...context };
+    newContext.workspace.projects['app1'].targets.test.options = {};
+
+    const output = await sonarScanExecutor(
       {
         hostUrl: 'url',
-        verbose: false,
         projectKey: 'key',
         qualityGate: true,
-        organization: 'org',
-        testInclusions: 'include',
-        extra: {
-          'sonar.test.inclusions': 'dontInclude',
-          'sonar.log.level': 'DEBUG',
-        },
       },
-      'src/',
-      'coverage/apps',
-      ''
+      newContext
     );
-
-    expect(output['sonar.branch']).toBe('main');
-    expect(output['sonar.verbose']).toBe('true');
-    expect(output['sonar.log.level']).toBe('DEBUG');
-    expect(output['sonar.log.level.extended']).toBe('DEBUG');
-    expect(output['sonar.test.inclusions']).toBe('include');
+    expect(output.success).toBe(true);
   });
 
-  it('should return app package json', async () => {
-    const packageJson = {
-      version: '1.1.1',
-    };
-    (
-      readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation((p) => {
-      if (p == 'apps/app1/package.json') {
-        return packageJson;
-      }
-      throw new MockError(
-        `mocked Implementation expected apps/app1/package.json. provided path:${p}`
-      );
-    });
-    const output = getScannerOptions(
-      context,
+  it('should scan project and dependencies & skip projects with no coverageDirectory', async () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValue('');
+
+    sonarQubeScanner.mockResolvedValue(true);
+
+    const output = await sonarScanExecutor(
       {
         hostUrl: 'url',
-        verbose: false,
         projectKey: 'key',
         qualityGate: true,
-        organization: 'org',
-        testInclusions: 'include',
-        extra: {
-          'sonar.test.inclusions': 'dontInclude',
-          'sonar.log.level': 'DEBUG',
-        },
       },
-      'src/',
-      'coverage/apps',
-      ''
+      context
     );
-
-    expect(output['sonar.projectVersion']).toBe(packageJson.version);
+    expect(output.success).toBe(true);
   });
 
-  it('should return root package json', async () => {
-    const packageJson = {
-      version: '2.1.2',
-    };
-    (
-      readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation((p) => {
-      if (p != 'package.json') {
-        throw new MockError(
-          `mocked expecting a package.json as path. given path:${p}`
-        );
-      }
-      return packageJson;
+  it('should error on sonar scanner issue', async () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+    sonarQubeScanner.async.mockImplementation(() => {
+      throw new Error();
     });
-    const output = getScannerOptions(
-      context,
+
+    const output = await sonarScanExecutor(
       {
         hostUrl: 'url',
-        verbose: false,
         projectKey: 'key',
-        qualityGate: true,
-        organization: 'org',
-        testInclusions: 'include',
-        extra: {
-          'sonar.test.inclusions': 'dontInclude',
-          'sonar.log.level': 'DEBUG',
-        },
       },
-      'src/',
-      'coverage/apps',
-      ''
+      context
     );
-
-    expect(output['sonar.projectVersion']).toBe(packageJson.version);
+    expect(output.success).toBeFalsy();
   });
 
-  it('should return options version', async () => {
-    const packageVersion = '3.3.3';
-    (
-      readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation(() => {
-      return JSON.parse(defaultPackageJson);
-    });
-    const output = getScannerOptions(
-      context,
+  it('should return jest config coverage directory path', async () => {
+    const paths = await determinePaths(
       {
         hostUrl: 'url',
-        verbose: false,
         projectKey: 'key',
-        qualityGate: true,
-        organization: 'org',
-        projectVersion: packageVersion,
-        testInclusions: 'include',
-        extra: {
-          'sonar.test.inclusions': 'dontInclude',
-          'sonar.log.level': 'DEBUG',
-        },
       },
-      'src/',
-      'coverage/apps',
-      ''
+      context
     );
-
-    expect(output['sonar.projectVersion']).toBe(packageVersion);
+    expect(paths.lcovPaths.includes('coverage/apps/app1/lcov.info')).toBe(true);
   });
 
-  it('should return no version', async () => {
-    (
-      readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation(() => JSON.parse('{}'));
-    const output = getScannerOptions(
-      context,
+  it('should return project test config coverage directory path', async () => {
+    const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
+    testContext.workspace.projects.app1.targets.test.options.coverageDirectory =
+      'coverage/test/apps/app1';
+    const paths = await determinePaths(
       {
         hostUrl: 'url',
-        verbose: false,
         projectKey: 'key',
-        qualityGate: true,
-        organization: 'org',
-        testInclusions: 'include',
-        extra: {
-          'sonar.test.inclusions': 'dontInclude',
-          'sonar.log.level': 'DEBUG',
-        },
       },
-      'src/',
-      'coverage/apps',
-      ''
+      testContext
     );
-
-    expect(output['sonar.projectVersion']).toBe('');
-  });
-
-  it('should return no version 2', async () => {
-    (
-      readJsonFile as jest.MockedFunction<typeof readJsonFile>
-    ).mockImplementation(() => {
-      throw new MockError('this mock is supposed to fail on every call');
-    });
-    const output = getScannerOptions(
-      context,
-      {
-        hostUrl: 'url',
-        verbose: false,
-        projectKey: 'key',
-        qualityGate: true,
-        organization: 'org',
-        testInclusions: 'include',
-        extra: {
-          'sonar.test.inclusions': 'dontInclude',
-          'sonar.log.level': 'DEBUG',
-        },
-      },
-      'src/',
-      'coverage/apps',
-      ''
+    expect(paths.lcovPaths.includes('coverage/test/apps/app1/lcov.info')).toBe(
+      true
     );
-
-    expect(output['sonar.projectVersion']).toBe('');
   });
 });

@@ -37,7 +37,7 @@ lcov Paths:
 
 1. Nx workspace
 2. SonarQube or Sonar Cloud instance
-3. Jest tests & code coverage enabled
+3. Jest/Vite tests & code coverage enabled
 
 ### Installation
 
