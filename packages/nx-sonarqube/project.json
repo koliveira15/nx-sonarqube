@@ -38,15 +38,7 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/nx-sonarqube/**/*.ts",
-          "packages/nx-sonarqube/generators.json",
-          "packages/nx-sonarqube/executors.json",
-          "packages/nx-sonarqube/package.json"
-        ]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
