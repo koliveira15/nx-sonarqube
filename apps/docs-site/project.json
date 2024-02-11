@@ -1,0 +1,30 @@
+{
+  "name": "docs-site",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/docs-site/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "command": "astro build --root apps/docs-site",
+        "forwardAllArgs": true
+      },
+      "dependsOn": [
+        {
+          "projects": ["koliveira15"],
+          "target": "build-reference-docs"
+        }
+      ]
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "astro dev --root apps/docs-site",
+        "forwardAllArgs": true
+      }
+    }
+  },
+  "tags": []
+}

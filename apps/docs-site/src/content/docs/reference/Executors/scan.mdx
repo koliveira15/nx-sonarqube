@@ -1,0 +1,107 @@
+---
+title: 'scan'
+---
+
+import { Code } from '@astrojs/starlight/components';
+import exampleFile from '../../../../data/examples/plugin/scan.json?raw';
+
+Scans and uploads test coverage based on [Sonar Analysis Parameters](https://docs.sonarqube.org/latest/analysis/analysis-parameters/)
+
+## Example
+
+<Code code={exampleFile} lang="json" title="project.json"/>
+
+## Options
+
+### hostUrl
+
+`Required`
+
+**Type**: `string`
+
+**Default**: http://localhost:9000
+
+Sonar server URL
+
+### projectKey
+
+`Required`
+
+**Type**: `string`
+
+The project's unique key. Allowed characters are: letters, numbers, -, _, . and :, with at least one non-digit.
+
+### branches
+
+**Type**: `boolean`
+
+Include branch name in analysis
+
+### exclusions
+
+**Type**: `string`
+
+Files to exclude from coverage
+
+### organization
+
+**Type**: `string`
+
+Sonar organization
+
+### projectName
+
+**Type**: `string`
+
+Name of the project that will be displayed on the web interface.
+
+### projectVersion
+
+**Type**: `string`
+
+The project version.
+
+### qualityGate
+
+**Type**: `boolean`
+
+**Default**: true
+
+Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status.
+
+### qualityGateTimeout
+
+**Type**: `string`
+
+**Default**: 300
+
+Sets the number of seconds that the scanner should wait for a report to be processed.
+
+### skipImplicitDeps
+
+**Type**: `boolean`
+
+Skips adding implicit dependencies to the project graph analysis
+
+### testInclusions
+
+**Type**: `string`
+
+**Default**: **/*.spec.ts
+
+Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis
+
+### tsConfig
+
+**Type**: `string`
+
+**Default**: tsconfig.base.json
+
+Path to tsconfig.json
+
+### verbose
+
+**Type**: `boolean`
+
+Add more detail to both client and server-side analysis logs
+

@@ -1,0 +1,109 @@
+---
+title: 'config'
+---
+
+
+Configures the [Sonar scan executor](/reference/executors/scan/)
+
+## Example
+
+```sh
+npx nx g @koliveira15/nx-sonarqube:config
+```
+
+## Options
+
+### name
+
+`Required`
+
+**Type**: `string`
+
+Name of the Nx project to configure with the Sonar executor
+
+### hostUrl
+
+`Required`
+
+**Type**: `string`
+
+Sonar server URL
+
+### projectKey
+
+`Required`
+
+**Type**: `string`
+
+The project's unique key. Allowed characters are: letters, numbers, -, _, . and :, with at least one non-digit.
+
+### skipTargetDefaults
+
+**Type**: `boolean`
+
+Skip adding test targetDefaults to nx.json
+
+### branches
+
+**Type**: `boolean`
+
+Include branch name in analysis
+
+### exclusions
+
+**Type**: `string`
+
+Files to exclude from coverage
+
+### login
+
+**Type**: `string`
+
+The authentication token or login of a SonarQube user with either Execute Analysis permission on the project or Global Execute Analysis permission.
+
+### organization
+
+**Type**: `string`
+
+Sonar organization
+
+### password
+
+**Type**: `string`
+
+If you're using an authentication token, leave this blank. If you're using a login, this is the password that goes with your sonar.login username.
+
+### projectName
+
+**Type**: `string`
+
+Name of the project that will be displayed on the web interface.
+
+### projectVersion
+
+**Type**: `string`
+
+The project version.
+
+### qualityGate
+
+**Type**: `boolean`
+
+**Default**: true
+
+Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status.
+
+### qualityGateTimeout
+
+**Type**: `string`
+
+**Default**: 300
+
+Sets the number of seconds that the scanner should wait for a report to be processed.
+
+### skipImplicitDeps
+
+**Type**: `boolean`
+
+Skips adding implicit dependencies to the project graph analysis
+

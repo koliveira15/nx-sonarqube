@@ -1,0 +1,19 @@
+...
+
+INFO: Analysis report generated in 88ms, dir size=320 KB
+INFO: Analysis report compressed in 26ms, zip size=82 KB
+INFO: Analysis report uploaded in 520ms
+INFO: Sensor cache published successfully
+INFO: ------------- Check Quality Gate status
+INFO: Waiting for the analysis report to be processed (max 300s)
+INFO: QUALITY GATE STATUS: PASSED - View details on https://sonarcloud.io/dashboard?id=app
+INFO: Analysis total time: 37.334 s
+INFO: ------------------------------------------------------------------------
+INFO: EXECUTION SUCCESS
+INFO: ------------------------------------------------------------------------
+INFO: Total time: 38.993s
+INFO: Final Memory: 57M/228M
+INFO: ------------------------------------------------------------------------
+[19:31:42] Analysis finished.
+
+>  NX Successfully ran target sonar for project app and 1 task it depends on

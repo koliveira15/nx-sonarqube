@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "sonar": {
+      "dependsOn": ["^test", "test"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
+    }
+  }
+}

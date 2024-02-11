@@ -1,7 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema",
   "$id": "NxSonarqube",
-  "title": "",
+  "title": "config",
+  "description": "Configures the [Sonar scan executor](/reference/executors/scan/)",
+  "example": "../../../../data/examples/plugin/project.json?raw",
   "type": "object",
   "properties": {
     "name": {
