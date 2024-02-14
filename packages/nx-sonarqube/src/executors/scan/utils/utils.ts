@@ -69,7 +69,6 @@ function getCoverageDirectoryName(executor: Executor): CoverageDirectoryName {
   return 'coverageDirectory';
 }
 
-
 export async function determinePaths(
   options: ScanExecutorSchema,
   context: ExecutorContext
@@ -94,7 +93,8 @@ export async function determinePaths(
 
       if (dep.testTarget) {
         const executor: Executor = getExecutor(dep.testTarget.executor);
-        const coverageDirectoryName: CoverageDirectoryName = getCoverageDirectoryName(executor);
+        const coverageDirectoryName: CoverageDirectoryName =
+          getCoverageDirectoryName(executor);
 
         if (dep.testTarget.options?.[coverageDirectoryName]) {
           lcovPaths.push(
@@ -105,7 +105,10 @@ export async function determinePaths(
               'lcov.info'
             )
           );
-        } else if (executor === '@nx/jest:jest' && dep.testTarget.options?.jestConfig) {
+        } else if (
+          executor === '@nx/jest:jest' &&
+          dep.testTarget.options?.jestConfig
+        ) {
           const jestConfigPath = dep.testTarget.options.jestConfig;
           const jestConfig = readFileSync(jestConfigPath, 'utf-8');
           const ast = tsquery.ast(jestConfig);
@@ -127,15 +130,18 @@ export async function determinePaths(
             );
           } else {
             logger.warn(
-              `Skipping ${context.projectName} as it does not have a coverageDirectory in ${jestConfigPath}`
+              `Skipping ${dep.name} as it does not have a coverageDirectory in ${jestConfigPath}`
             );
           }
         } else if (executor === '@nx/vite:test') {
-          const configPath: string | undefined = getViteConfigPath(context.root, dep);
+          const configPath: string | undefined = getViteConfigPath(
+            context.root,
+            dep
+          );
 
           if (configPath === undefined) {
             logger.warn(
-              `Skipping ${context.projectName} as we cannot find a vite config file`
+              `Skipping ${dep.name} as we cannot find a vite config file`
             );
 
             return;
@@ -161,18 +167,14 @@ export async function determinePaths(
             );
           } else {
             logger.warn(
-              `Skipping ${context.projectName} as it does not have a reportsDirectory in ${configPath}`
+              `Skipping ${dep.name} as it does not have a reportsDirectory in ${configPath}`
             );
           }
         } else {
-          logger.warn(
-            `Skipping ${context.projectName} as it does not have a jestConfig`
-          );
+          logger.warn(`Skipping ${dep.name} as it does not have a jestConfig`);
         }
       } else {
-        logger.warn(
-          `Skipping ${context.projectName} as it does not have a test target`
-        );
+        logger.warn(`Skipping ${dep.name} as it does not have a test target`);
       }
     });
 
@@ -305,7 +307,9 @@ function getPackageJsonVersion(dir = ''): string {
       `resolved package json from ${dir}, package version:${version}`
     );
   } catch (e) {
-    logger.debug(`Unable to open file ${joinPathFragments(dir, 'package.json')}`)
+    logger.debug(
+      `Unable to open file ${joinPathFragments(dir, 'package.json')}`
+    );
   }
   return version;
 }
@@ -346,10 +350,10 @@ export function normalizeViteConfigFilePathWithTree(
   return configFilePath && existsSync(configFilePath)
     ? configFilePath
     : existsSync(joinPathFragments(`${projectRoot}/vite.config.ts`))
-      ? joinPathFragments(`${projectRoot}/vite.config.ts`)
-      : existsSync(joinPathFragments(`${projectRoot}/vite.config.js`))
-        ? joinPathFragments(`${projectRoot}/vite.config.js`)
-        : undefined;
+    ? joinPathFragments(`${projectRoot}/vite.config.ts`)
+    : existsSync(joinPathFragments(`${projectRoot}/vite.config.js`))
+    ? joinPathFragments(`${projectRoot}/vite.config.js`)
+    : undefined;
 }
 
 export function getViteConfigPath(
