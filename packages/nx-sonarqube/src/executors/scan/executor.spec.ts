@@ -239,7 +239,7 @@ describe('Scan Executor', (): void => {
         projectKey: 'key',
         qualityGate: true,
         branch: 'feature/my-branch',
-        skipTypeDefs: []
+        skipTypeDefs: [DependencyType.implicit]
       },
       context
     );
