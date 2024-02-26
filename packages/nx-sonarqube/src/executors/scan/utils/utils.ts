@@ -104,7 +104,13 @@ export async function determinePaths(
 
   deps.workspaceLibraries
     .filter((project) =>
-      options.skipImplicitDeps ? project.type !== DependencyType.implicit : true
+      context.projectName === project.name || (options.skipPaths.length ? options.skipPaths.some(path => project.sourceRoot.includes(path)) : true)
+    )
+    .filter((project) =>
+      context.projectName === project.name || (options.skipProjects.length ? options.skipProjects.includes(project.name) : true)
+    )
+    .filter((project) =>
+      context.projectName === project.name || (options.skipTypeDeps.length ? options.skipTypeDeps.includes(project.type) : true)
     )
     .forEach((dep) => {
       sources.push(dep.sourceRoot);

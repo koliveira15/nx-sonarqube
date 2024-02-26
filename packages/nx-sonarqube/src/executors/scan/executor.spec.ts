@@ -238,8 +238,8 @@ describe('Scan Executor', (): void => {
         hostUrl: 'url',
         projectKey: 'key',
         qualityGate: true,
-        skipImplicitDeps: true,
         branch: 'feature/my-branch',
+        skipTypeDefs: []
       },
       context
     );

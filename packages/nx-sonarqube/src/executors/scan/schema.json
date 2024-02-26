@@ -45,6 +45,21 @@
       "type": "string",
       "default": "300"
     },
+    "skipTypeDeps": {
+      "description": "Skips adding implicit or dynamic dependencies to the project graph analysis",
+      "type": "array",
+      "default": []
+    },
+    "skipProjects": {
+      "description": "Skips projects to the project graph analysis",
+      "type": "array",
+      "default": []
+    },
+    "skipPaths": {
+      "description": "Skips paths to the project graph analysis",
+      "type": "array",
+      "default": []
+    },
     "skipImplicitDeps": {
       "description": "Skips adding implicit dependencies to the project graph analysis",
       "type": "boolean",

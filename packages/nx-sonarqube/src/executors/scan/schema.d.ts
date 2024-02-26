@@ -8,7 +8,9 @@ export interface ScanExecutorSchema {
   projectVersion?: string;
   qualityGate?: boolean;
   qualityGateTimeout?: string;
-  skipImplicitDeps?: boolean;
+  skipTypeDeps?: string[];
+  skipProjects?: string[];
+  skipPaths?: string[];
   testInclusions?: string;
   tsConfig?: string;
   verbose?: boolean;
