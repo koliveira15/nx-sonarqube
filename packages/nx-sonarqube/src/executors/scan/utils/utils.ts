@@ -10,7 +10,6 @@ import {
   readJsonFile,
 } from '@nx/devkit';
 import { tsquery } from '@phenomnomnominal/tsquery';
-import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { existsSync, readFileSync } from 'fs';
@@ -222,16 +221,11 @@ export async function scanner(
 
   if (!options.qualityGate) logger.warn(`Skipping quality gate check`);
 
-  let branch = '';
-  if (options.branches) {
-    branch = execSync('git rev-parse --abbrev-ref HEAD').toString();
-  }
   const scannerOptions = getScannerOptions(
     context,
     options,
     paths.sources,
-    paths.lcovPaths,
-    branch
+    paths.lcovPaths
   );
   const success = await sonarQubeScanner.async({
     serverUrl: options.hostUrl,
@@ -246,8 +240,7 @@ export function getScannerOptions(
   context: ExecutorContext,
   options: ScanExecutorSchema,
   sources: string,
-  lcovPaths: string,
-  branch: string
+  lcovPaths: string
 ): { [option: string]: string } {
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
@@ -269,8 +262,8 @@ export function getScannerOptions(
     'sonar.typescript.tsconfigPath': options.tsConfig,
     'sonar.verbose': String(options.verbose),
   };
-  if (options.branches) {
-    scannerOptions['sonar.branch.name'] = branch;
+  if (options.branch) {
+    scannerOptions['sonar.branch.name'] = options.branch;
   }
   scannerOptions = combineOptions(
     new ExtraMarshaller(options.extra),
