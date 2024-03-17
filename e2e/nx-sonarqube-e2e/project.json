@@ -13,6 +13,9 @@
       },
       "dependsOn": ["nx-sonarqube:build"]
     },
+    "lint": {
+      "executor": "nx:noop"
+    },
     "sonar": {
       "executor": "@koliveira15/nx-sonarqube:scan",
       "options": {
