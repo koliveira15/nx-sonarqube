@@ -16,6 +16,9 @@
     "lint": {
       "executor": "nx:noop"
     },
+    "test": {
+      "executor": "nx:noop"
+    },
     "sonar": {
       "executor": "@koliveira15/nx-sonarqube:scan",
       "options": {
