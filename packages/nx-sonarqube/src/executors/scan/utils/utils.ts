@@ -10,20 +10,23 @@ import {
   readJsonFile,
 } from '@nx/devkit';
 import { tsquery } from '@phenomnomnominal/tsquery';
-import { execSync } from 'child_process';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { readFileSync, existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 
 interface OptionMarshaller {
   Options(): { [option: string]: string };
 }
 
-type Executor = '@nx/jest:jest' | '@nx/vite:test';
+enum TestRunner {
+  Jest,
+  Vitest,
+}
 
 export declare type WorkspaceLibrary = {
   name: string;
   type: DependencyType | string;
+  projectRoot: string;
   sourceRoot: string;
   testTarget?: TargetConfiguration;
 };
@@ -49,26 +52,39 @@ class EnvMarshaller implements OptionMarshaller {
   }
 }
 
-function getExecutor(executor: string): Executor {
-  if (executor === '@nx/vite:test') {
-    return '@nx/vite:test';
-  }
+function getTestRunner(project: WorkspaceLibrary): TestRunner {
+  let testRunner: TestRunner;
+  const executor = project.testTarget.executor;
 
-  // Always fallback to the default executor: jest
-  return '@nx/jest:jest';
+  if (executor.includes('vite')) {
+    testRunner = TestRunner.Vitest;
+  } else if (executor.includes('jest')) {
+    testRunner = TestRunner.Jest;
+  } else if (executor.includes('run-commands')) {
+    // project crystal
+    const command = project.testTarget.options.command;
+    if (command.includes('vitest')) {
+      testRunner = TestRunner.Vitest;
+    } else if (command.includes('jest')) {
+      testRunner = TestRunner.Jest;
+    }
+  }
+  return testRunner;
 }
 
 type CoverageDirectoryName = 'coverageDirectory' | 'reportsDirectory';
 
-function getCoverageDirectoryName(executor: Executor): CoverageDirectoryName {
-  if (executor === '@nx/vite:test') {
-    return 'reportsDirectory';
+function getCoverageDirectoryName(
+  testRunner: TestRunner
+): CoverageDirectoryName {
+  let coverageDirectory: CoverageDirectoryName;
+  if (testRunner === TestRunner.Vitest) {
+    coverageDirectory = 'reportsDirectory';
+  } else if (testRunner === TestRunner.Jest) {
+    coverageDirectory = 'coverageDirectory';
   }
-
-  // Always fallback to the default coverage directory for the default executor: jest
-  return 'coverageDirectory';
+  return coverageDirectory;
 }
-
 
 export async function determinePaths(
   options: ScanExecutorSchema,
@@ -81,6 +97,7 @@ export async function determinePaths(
   deps.workspaceLibraries.push({
     name: context.projectName,
     type: DependencyType.static,
+    projectRoot: projectConfiguration.root,
     sourceRoot: projectConfiguration.sourceRoot,
     testTarget: projectConfiguration.targets.test,
   });
@@ -90,11 +107,16 @@ export async function determinePaths(
       options.skipImplicitDeps ? project.type !== DependencyType.implicit : true
     )
     .forEach((dep) => {
-      sources.push(dep.sourceRoot);
+      if (dep.sourceRoot) {
+        sources.push(dep.sourceRoot);
+      } else {
+        sources.push(dep.projectRoot);
+      }
 
       if (dep.testTarget) {
-        const executor: Executor = getExecutor(dep.testTarget.executor);
-        const coverageDirectoryName: CoverageDirectoryName = getCoverageDirectoryName(executor);
+        const testRunner: TestRunner = getTestRunner(dep);
+        const coverageDirectoryName: CoverageDirectoryName =
+          getCoverageDirectoryName(testRunner);
 
         if (dep.testTarget.options?.[coverageDirectoryName]) {
           lcovPaths.push(
@@ -105,8 +127,20 @@ export async function determinePaths(
               'lcov.info'
             )
           );
-        } else if (executor === '@nx/jest:jest' && dep.testTarget.options?.jestConfig) {
-          const jestConfigPath = dep.testTarget.options.jestConfig;
+        } else if (testRunner === TestRunner.Jest) {
+          const jestConfigPath: string = joinPathFragments(
+            context.root,
+            dep.projectRoot,
+            'jest.config.ts'
+          );
+
+          if (!existsSync(jestConfigPath)) {
+            logger.warn(
+              `Skipping ${dep.name} as the jest config file cannot be found`
+            );
+            return;
+          }
+
           const jestConfig = readFileSync(jestConfigPath, 'utf-8');
           const ast = tsquery.ast(jestConfig);
           const nodes = tsquery(
@@ -127,21 +161,25 @@ export async function determinePaths(
             );
           } else {
             logger.warn(
-              `Skipping ${context.projectName} as it does not have a coverageDirectory in ${jestConfigPath}`
+              `Skipping ${dep.name} as it does not have a coverageDirectory in ${jestConfigPath}`
             );
           }
-        } else if (executor === '@nx/vite:test') {
-          const configPath: string | undefined = getViteConfigPath(context.root, dep);
+        } else if (TestRunner.Vitest) {
+          const viteConfigPath: string = joinPathFragments(
+            context.root,
+            dep.projectRoot,
+            'vite.config.ts'
+          );
 
-          if (configPath === undefined) {
+          if (!existsSync(viteConfigPath)) {
             logger.warn(
-              `Skipping ${context.projectName} as we cannot find a vite config file`
+              `Skipping ${dep.name} as the vite config file cannot be found`
             );
 
             return;
           }
 
-          const config = readFileSync(configPath, 'utf-8');
+          const config = readFileSync(viteConfigPath, 'utf-8');
           const ast = tsquery.ast(config);
           const nodes = tsquery(
             ast,
@@ -161,18 +199,12 @@ export async function determinePaths(
             );
           } else {
             logger.warn(
-              `Skipping ${context.projectName} as it does not have a reportsDirectory in ${configPath}`
+              `Skipping ${dep.name} as it does not have a reportsDirectory in ${viteConfigPath}`
             );
           }
-        } else {
-          logger.warn(
-            `Skipping ${context.projectName} as it does not have a jestConfig`
-          );
         }
       } else {
-        logger.warn(
-          `Skipping ${context.projectName} as it does not have a test target`
-        );
+        logger.warn(`Skipping ${dep.name} as it does not have a test target`);
       }
     });
 
@@ -188,19 +220,16 @@ export async function scanner(
 ): Promise<{ success: boolean }> {
   const paths = await determinePaths(options, context);
 
-  logger.log(`Included sources: ${paths.sources}`);
+  logger.log(`Included sources paths: ${paths.sources}`);
+  logger.log(`Included lcov paths: ${paths.lcovPaths}`);
+
   if (!options.qualityGate) logger.warn(`Skipping quality gate check`);
 
-  let branch = '';
-  if (options.branches) {
-    branch = execSync('git rev-parse --abbrev-ref HEAD').toString();
-  }
   const scannerOptions = getScannerOptions(
     context,
     options,
     paths.sources,
-    paths.lcovPaths,
-    branch
+    paths.lcovPaths
   );
   const success = await sonarQubeScanner.async({
     serverUrl: options.hostUrl,
@@ -215,8 +244,7 @@ export function getScannerOptions(
   context: ExecutorContext,
   options: ScanExecutorSchema,
   sources: string,
-  lcovPaths: string,
-  branch: string
+  lcovPaths: string
 ): { [option: string]: string } {
   let scannerOptions: { [option: string]: string } = {
     'sonar.exclusions': options.exclusions,
@@ -238,8 +266,8 @@ export function getScannerOptions(
     'sonar.typescript.tsconfigPath': options.tsConfig,
     'sonar.verbose': String(options.verbose),
   };
-  if (options.branches) {
-    scannerOptions['sonar.branch.name'] = branch;
+  if (options.branch) {
+    scannerOptions['sonar.branch.name'] = options.branch;
   }
   scannerOptions = combineOptions(
     new ExtraMarshaller(options.extra),
@@ -305,7 +333,9 @@ function getPackageJsonVersion(dir = ''): string {
       `resolved package json from ${dir}, package version:${version}`
     );
   } catch (e) {
-    logger.debug(`Unable to open file ${joinPathFragments(dir, 'package.json')}`)
+    logger.debug(
+      `Unable to open file ${joinPathFragments(dir, 'package.json')}`
+    );
   }
   return version;
 }
@@ -329,6 +359,7 @@ function collectDependencies(
       dependencies.workspaceLibraries.set(dependency.target, {
         name: dependency.target,
         type: dependency.type,
+        projectRoot: projectGraph.nodes[dependency.target].data.root,
         sourceRoot: projectGraph.nodes[dependency.target].data.sourceRoot,
         testTarget: projectGraph.nodes[dependency.target].data.targets.test,
       });
@@ -337,26 +368,4 @@ function collectDependencies(
   });
 
   return dependencies;
-}
-
-export function normalizeViteConfigFilePathWithTree(
-  projectRoot: string,
-  configFilePath?: string
-): string | undefined {
-  return configFilePath && existsSync(configFilePath)
-    ? configFilePath
-    : existsSync(joinPathFragments(`${projectRoot}/vite.config.ts`))
-      ? joinPathFragments(`${projectRoot}/vite.config.ts`)
-      : existsSync(joinPathFragments(`${projectRoot}/vite.config.js`))
-        ? joinPathFragments(`${projectRoot}/vite.config.js`)
-        : undefined;
-}
-
-export function getViteConfigPath(
-  projectRoot: string,
-  dep: WorkspaceLibrary
-): string | undefined {
-  const viteConfigPath: string | undefined = dep.testTarget.options?.configFile;
-
-  return normalizeViteConfigFilePathWithTree(projectRoot, viteConfigPath);
 }

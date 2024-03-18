@@ -16,10 +16,9 @@
       "description": "The project's unique key. Allowed characters are: letters, numbers, -, _, . and :, with at least one non-digit.",
       "type": "string"
     },
-    "branches": {
-      "description": "Include branch name in analysis",
-      "type": "boolean",
-      "default": false
+    "branch": {
+      "description": "The branch name",
+      "type": "string"
     },
     "exclusions": {
       "description": "Files to exclude from coverage",

@@ -72,7 +72,6 @@ describe('Scan Executor', (): void => {
           },
           lib2: {
             root: 'libs/lib2',
-            sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
                 executor: '@nx/jest:jest',
@@ -175,7 +174,6 @@ describe('Scan Executor', (): void => {
           type: 'lib',
           data: {
             root: 'libs/lib2',
-            sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
                 executor: '',
@@ -239,6 +237,7 @@ describe('Scan Executor', (): void => {
         projectKey: 'key',
         qualityGate: true,
         skipImplicitDeps: true,
+        branch: 'feature/my-branch',
       },
       context
     );
@@ -249,13 +248,10 @@ describe('Scan Executor', (): void => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
     sonarQubeScanner.mockResolvedValue(true);
 
-    jest.spyOn(childProcess, 'execSync').mockReturnValue('feature/my-branch');
-
     const output = await sonarScanExecutor(
       {
         hostUrl: 'url',
         projectKey: 'key',
-        branches: true,
         qualityGate: true,
       },
       context
@@ -307,8 +303,7 @@ describe('Scan Executor', (): void => {
         },
       },
       'src/',
-      'coverage/apps',
-      ''
+      'coverage/apps'
     );
 
     expect(output['sonar.branch']).toBe('main');
@@ -347,8 +342,7 @@ describe('Scan Executor', (): void => {
         },
       },
       'src/',
-      'coverage/apps',
-      ''
+      'coverage/apps'
     );
 
     expect(output['sonar.projectVersion']).toBe(packageJson.version);
@@ -383,8 +377,7 @@ describe('Scan Executor', (): void => {
         },
       },
       'src/',
-      'coverage/apps',
-      ''
+      'coverage/apps'
     );
 
     expect(output['sonar.projectVersion']).toBe(packageJson.version);
@@ -413,8 +406,7 @@ describe('Scan Executor', (): void => {
         },
       },
       'src/',
-      'coverage/apps',
-      ''
+      'coverage/apps'
     );
 
     expect(output['sonar.projectVersion']).toBe(packageVersion);
@@ -439,8 +431,7 @@ describe('Scan Executor', (): void => {
         },
       },
       'src/',
-      'coverage/apps',
-      ''
+      'coverage/apps'
     );
 
     expect(output['sonar.projectVersion']).toBe('');
@@ -467,8 +458,7 @@ describe('Scan Executor', (): void => {
         },
       },
       'src/',
-      'coverage/apps',
-      ''
+      'coverage/apps'
     );
 
     expect(output['sonar.projectVersion']).toBe('');
