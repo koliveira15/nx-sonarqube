@@ -45,10 +45,13 @@
       "type": "string",
       "default": "300"
     },
-    "skipTypeDeps": {
-      "description": "Skips adding implicit or dynamic dependencies to the project graph analysis",
+    "skipDependencyTypes": {
       "type": "array",
-      "default": []
+      "items": {
+        "type": "string",
+        "enum": ["implicit", "static", "dynamic"]
+      },
+      "description": "Skips specified dependency types from the dependency graph. More info: https://nx.dev/nx-api/devkit/documents/DependencyType#enumeration-dependencytype"
     },
     "skipProjects": {
       "description": "Skips projects to the project graph analysis",

@@ -101,114 +101,129 @@ export async function determinePaths(
     sourceRoot: projectConfiguration.sourceRoot,
     testTarget: projectConfiguration.targets.test,
   });
-
-  deps.workspaceLibraries
-    .filter((project) =>
-      context.projectName === project.name || (options.skipPaths.length ? options.skipPaths.some(path => project.sourceRoot.includes(path)) : true)
+  const workspaceLibraries = deps.workspaceLibraries
+    .filter(
+      (project) =>
+        context.projectName === project.name ||
+        (options.skipPaths?.length
+          ? options.skipPaths.some((path) => project.sourceRoot.includes(path))
+          : true)
     )
-    .filter((project) =>
-      context.projectName === project.name || (options.skipProjects.length ? options.skipProjects.includes(project.name) : true)
+    .filter(
+      (project) =>
+        context.projectName === project.name ||
+        (options.skipProjects?.length
+          ? options.skipProjects.includes(project.name)
+          : true)
     )
-    .filter((project) =>
-      context.projectName === project.name || (options.skipTypeDeps.length ? options.skipTypeDeps.includes(project.type) : true)
-    )
-    .forEach((dep) => {
-      sources.push(dep.sourceRoot);
+    .filter((project) => {
+      if (
+        context.projectName === project.name ||
+        !options.skipDependencyTypes?.length
+      ) {
+        return true;
+      }
+      return options.skipDependencyTypes.includes(
+        project.type as 'implicit' | 'static' | 'dynamic'
+      );
+    });
+  workspaceLibraries.forEach((dep) => {
+    sources.push(dep.sourceRoot);
 
-      if (dep.testTarget) {
-        const testRunner: TestRunner = getTestRunner(dep);
-        const coverageDirectoryName: CoverageDirectoryName =
-          getCoverageDirectoryName(testRunner);
+    if (dep.testTarget) {
+      const testRunner: TestRunner = getTestRunner(dep);
+      const coverageDirectoryName: CoverageDirectoryName =
+        getCoverageDirectoryName(testRunner);
 
-        if (dep.testTarget.options?.[coverageDirectoryName]) {
+      if (dep.testTarget.options?.[coverageDirectoryName]) {
+        lcovPaths.push(
+          joinPathFragments(
+            dep.testTarget.options[coverageDirectoryName]
+              .replace(new RegExp(/'/g), '')
+              .replace(/^(?:\.\.\/)+/, ''),
+            'lcov.info'
+          )
+        );
+      } else if (testRunner === TestRunner.Jest) {
+        const jestConfigPath: string = joinPathFragments(
+          context.root,
+          dep.projectRoot,
+          'jest.config.ts'
+        );
+
+        if (!existsSync(jestConfigPath)) {
+          logger.warn(
+            `Skipping ${dep.name} as the jest config file cannot be found`
+          );
+          return;
+        }
+
+        const jestConfig = readFileSync(jestConfigPath, 'utf-8');
+        const ast = tsquery.ast(jestConfig);
+        const nodes = tsquery(
+          ast,
+          'Identifier[name="coverageDirectory"] ~ StringLiteral',
+          { visitAllChildren: true }
+        );
+
+        if (nodes.length) {
           lcovPaths.push(
             joinPathFragments(
-              dep.testTarget.options[coverageDirectoryName]
+              nodes[0]
+                .getText()
                 .replace(new RegExp(/'/g), '')
                 .replace(/^(?:\.\.\/)+/, ''),
               'lcov.info'
             )
           );
-        } else if (testRunner === TestRunner.Jest) {
-          const jestConfigPath: string = joinPathFragments(
-            context.root,
-            dep.projectRoot,
-            'jest.config.ts'
+        } else {
+          logger.warn(
+            `Skipping ${dep.name} as it does not have a coverageDirectory in ${jestConfigPath}`
           );
-
-          if (!existsSync(jestConfigPath)) {
-            logger.warn(
-              `Skipping ${dep.name} as the jest config file cannot be found`
-            );
-            return;
-          }
-
-          const jestConfig = readFileSync(jestConfigPath, 'utf-8');
-          const ast = tsquery.ast(jestConfig);
-          const nodes = tsquery(
-            ast,
-            'Identifier[name="coverageDirectory"] ~ StringLiteral',
-            { visitAllChildren: true }
-          );
-
-          if (nodes.length) {
-            lcovPaths.push(
-              joinPathFragments(
-                nodes[0]
-                  .getText()
-                  .replace(new RegExp(/'/g), '')
-                  .replace(/^(?:\.\.\/)+/, ''),
-                'lcov.info'
-              )
-            );
-          } else {
-            logger.warn(
-              `Skipping ${dep.name} as it does not have a coverageDirectory in ${jestConfigPath}`
-            );
-          }
-        } else if (TestRunner.Vitest) {
-          const viteConfigPath: string = joinPathFragments(
-            context.root,
-            dep.projectRoot,
-            'vite.config.ts'
-          );
-
-          if (!existsSync(viteConfigPath)) {
-            logger.warn(
-              `Skipping ${dep.name} as the vite config file cannot be found`
-            );
-
-            return;
-          }
-
-          const config = readFileSync(viteConfigPath, 'utf-8');
-          const ast = tsquery.ast(config);
-          const nodes = tsquery(
-            ast,
-            'Identifier[name="reportsDirectory"] ~ StringLiteral',
-            { visitAllChildren: true }
-          );
-
-          if (nodes.length) {
-            lcovPaths.push(
-              joinPathFragments(
-                nodes[0]
-                  .getText()
-                  .replace(new RegExp(/'/g), '')
-                  .replace(/^(?:\.\.\/)+/, ''),
-                'lcov.info'
-              )
-            );
-          } else {
-            logger.warn(
-              `Skipping ${dep.name} as it does not have a reportsDirectory in ${viteConfigPath}`
-            );
-          }
         }
-      } else {
-        logger.warn(`Skipping ${dep.name} as it does not have a test target`);
+      } else if (TestRunner.Vitest) {
+        const viteConfigPath: string = joinPathFragments(
+          context.root,
+          dep.projectRoot,
+          'vite.config.ts'
+        );
+
+        if (!existsSync(viteConfigPath)) {
+          logger.warn(
+            `Skipping ${dep.name} as the vite config file cannot be found`
+          );
+
+          return;
+        }
+
+        const config = readFileSync(viteConfigPath, 'utf-8');
+        const ast = tsquery.ast(config);
+        const nodes = tsquery(
+          ast,
+          'Identifier[name="reportsDirectory"] ~ StringLiteral',
+          { visitAllChildren: true }
+        );
+
+        if (nodes.length) {
+          lcovPaths.push(
+            joinPathFragments(
+              nodes[0]
+                .getText()
+                .replace(new RegExp(/'/g), '')
+                .replace(/^(?:\.\.\/)+/, ''),
+              'lcov.info'
+            )
+          );
+        } else {
+          logger.warn(
+            `Skipping ${dep.name} as it does not have a reportsDirectory in ${viteConfigPath}`
+          );
+        }
       }
-    });
+    } else {
+      logger.warn(`Skipping ${dep.name} as it does not have a test target`);
+    }
+  });
 
   return Promise.resolve({
     lcovPaths: lcovPaths.join(','),
