@@ -45,5 +45,7 @@ Thumbs.db
 # Sonar
 .scannerwork
 
-# generated types
+# astro
 .astro/
+apps/docs-site/src/content/docs/reference/Executors
+apps/docs-site/src/content/docs/reference/Generators

@@ -29,50 +29,6 @@
       "type": "boolean",
       "description": "Skip adding test targetDefaults to nx.json",
       "default": false
-    },
-    "branches": {
-      "description": "Include branch name in analysis",
-      "type": "boolean",
-      "default": false
-    },
-    "exclusions": {
-      "description": "Files to exclude from coverage",
-      "type": "string"
-    },
-    "login": {
-      "description": "The authentication token or login of a SonarQube user with either Execute Analysis permission on the project or Global Execute Analysis permission.",
-      "type": "string"
-    },
-    "organization": {
-      "description": "Sonar organization",
-      "type": "string"
-    },
-    "password": {
-      "description": "If you're using an authentication token, leave this blank. If you're using a login, this is the password that goes with your sonar.login username.",
-      "type": "string"
-    },
-    "projectName": {
-      "description": "Name of the project that will be displayed on the web interface.",
-      "type": "string"
-    },
-    "projectVersion": {
-      "description": "The project version.",
-      "type": "string"
-    },
-    "qualityGate": {
-      "description": "Forces the analysis step to poll the SonarQube instance and wait for the Quality Gate status.",
-      "type": "boolean",
-      "default": true
-    },
-    "qualityGateTimeout": {
-      "description": "Sets the number of seconds that the scanner should wait for a report to be processed.",
-      "type": "string",
-      "default": "300"
-    },
-    "skipImplicitDeps": {
-      "description": "Skips adding implicit dependencies to the project graph analysis",
-      "type": "boolean",
-      "default": false
     }
   },
   "required": ["name", "hostUrl", "projectKey"]
