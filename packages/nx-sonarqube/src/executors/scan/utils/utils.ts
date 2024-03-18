@@ -107,7 +107,11 @@ export async function determinePaths(
       options.skipImplicitDeps ? project.type !== DependencyType.implicit : true
     )
     .forEach((dep) => {
-      sources.push(dep.sourceRoot);
+      if (dep.sourceRoot) {
+        sources.push(dep.sourceRoot);
+      } else {
+        sources.push(dep.projectRoot);
+      }
 
       if (dep.testTarget) {
         const testRunner: TestRunner = getTestRunner(dep);

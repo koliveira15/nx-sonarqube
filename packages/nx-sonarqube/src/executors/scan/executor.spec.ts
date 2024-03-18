@@ -72,7 +72,6 @@ describe('Scan Executor', (): void => {
           },
           lib2: {
             root: 'libs/lib2',
-            sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
                 executor: '@nx/jest:jest',
@@ -175,7 +174,6 @@ describe('Scan Executor', (): void => {
           type: 'lib',
           data: {
             root: 'libs/lib2',
-            sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
                 executor: '',
