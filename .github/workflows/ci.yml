@@ -14,6 +14,7 @@ jobs:
     name: Nx Cloud - Main Job
     uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.14.0
     with:
+      node-version: 20
       main-branch-name: main
       number-of-agents: 3
       parallel-commands-on-agents: |
@@ -23,4 +24,5 @@ jobs:
     name: Nx Cloud - Agents
     uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.14.0
     with:
+      node-version: 20
       number-of-agents: 3
