@@ -7,7 +7,6 @@
     "sonar": {
       "executor": "@koliveira15/nx-sonarqube:scan",
       "options": {
-        "name": "app",
         "hostUrl": "https://sonarcloud.io",
         "projectKey": "app"
       }
