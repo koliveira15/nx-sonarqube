@@ -29,6 +29,7 @@ export declare type WorkspaceLibrary = {
   projectRoot: string;
   sourceRoot: string;
   testTarget?: TargetConfiguration;
+  tags: string[];
 };
 class ExtraMarshaller implements OptionMarshaller {
   private readonly options: { [option: string]: string };
@@ -100,6 +101,7 @@ export async function determinePaths(
     projectRoot: projectConfiguration.root,
     sourceRoot: projectConfiguration.sourceRoot,
     testTarget: projectConfiguration.targets.test,
+    tags: projectConfiguration.tags,
   });
 
   deps.workspaceLibraries
@@ -114,8 +116,11 @@ export async function determinePaths(
       const skipDependency = options.skipDependencyTypes?.includes(
         project.type as 'implicit' | 'static' | 'dynamic'
       );
+      const skipTags = options.skipTags?.some((tag) =>
+        project.tags.includes(tag)
+      );
 
-      return !(skipPath || skipProject || skipDependency);
+      return !(skipPath || skipProject || skipDependency || skipTags);
     })
     .forEach((dep) => {
       sources.push(dep.sourceRoot);
@@ -369,6 +374,7 @@ function collectDependencies(
         projectRoot: projectGraph.nodes[dependency.target].data.root,
         sourceRoot: projectGraph.nodes[dependency.target].data.sourceRoot,
         testTarget: projectGraph.nodes[dependency.target].data.targets.test,
+        tags: projectGraph.nodes[dependency.target].data.tags,
       });
       collectDependencies(projectGraph, dependency.target, dependencies, seen);
     }

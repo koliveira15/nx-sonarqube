@@ -11,6 +11,7 @@ export interface ScanExecutorSchema {
   skipDependencyTypes?: Array<'implicit' | 'static' | 'dynamic'>;
   skipProjects?: string[];
   skipPaths?: string[];
+  skipTags?: string[];
   testInclusions?: string;
   tsConfig?: string;
   verbose?: boolean;

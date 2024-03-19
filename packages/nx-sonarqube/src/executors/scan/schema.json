@@ -61,6 +61,10 @@
       "description": "Skips paths to the project graph analysis",
       "type": "array"
     },
+    "skipTags": {
+      "description": "Skips tags to the project graph analysis",
+      "type": "array"
+    },
     "testInclusions": {
       "description": "Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis",
       "type": "string",
