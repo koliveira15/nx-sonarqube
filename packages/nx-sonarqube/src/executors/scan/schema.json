@@ -46,27 +46,20 @@
       "default": "300"
     },
     "skipDependencyTypes": {
+      "description": "Skips specified dependency types from the dependency graph. More info: https://nx.dev/nx-api/devkit/documents/DependencyType#enumeration-dependencytype",
       "type": "array",
       "items": {
         "type": "string",
         "enum": ["implicit", "static", "dynamic"]
-      },
-      "description": "Skips specified dependency types from the dependency graph. More info: https://nx.dev/nx-api/devkit/documents/DependencyType#enumeration-dependencytype"
+      }
     },
     "skipProjects": {
       "description": "Skips projects to the project graph analysis",
-      "type": "array",
-      "default": []
+      "type": "array"
     },
     "skipPaths": {
       "description": "Skips paths to the project graph analysis",
-      "type": "array",
-      "default": []
-    },
-    "skipImplicitDeps": {
-      "description": "Skips adding implicit dependencies to the project graph analysis",
-      "type": "boolean",
-      "default": false
+      "type": "array"
     },
     "testInclusions": {
       "description": "Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis",

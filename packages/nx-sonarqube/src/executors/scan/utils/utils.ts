@@ -103,30 +103,19 @@ export async function determinePaths(
   });
 
   deps.workspaceLibraries
-    .filter(
-      (project) =>
-        context.projectName === project.name ||
-        (options.skipPaths?.length
-          ? options.skipPaths.some((path) => project.sourceRoot.includes(path))
-          : true)
-    )
-    .filter(
-      (project) =>
-        context.projectName === project.name ||
-        (options.skipProjects?.length
-          ? options.skipProjects.includes(project.name)
-          : true)
-    )
     .filter((project) => {
-      if (
-        context.projectName === project.name ||
-        !options.skipDependencyTypes?.length
-      ) {
+      if (context.projectName === project.name) {
         return true;
       }
-      return options.skipDependencyTypes.includes(
+      const skipPath = options.skipPaths?.some((path) =>
+        project.sourceRoot.includes(path)
+      );
+      const skipProject = options.skipProjects?.includes(project.name);
+      const skipDependency = options.skipDependencyTypes?.includes(
         project.type as 'implicit' | 'static' | 'dynamic'
       );
+
+      return !(skipPath || skipProject || skipDependency);
     })
     .forEach((dep) => {
       sources.push(dep.sourceRoot);
