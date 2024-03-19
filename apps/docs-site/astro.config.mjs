@@ -16,6 +16,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Docs',
+      favicon: '/favicon.png',
       customCss: ['./src/styles/theme.css'],
       social: {
         github: 'https://github.com/koliveira15/nx-sonarqube',
