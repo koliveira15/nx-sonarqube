@@ -29,17 +29,13 @@ jobs:
       - name: Build Docs Site
         run: npx nx build docs-site
 
-  upload-artifact:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: "dist/apps/docs-site"
 
   deploy:
-    needs: upload-artifact
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
