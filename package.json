@@ -60,12 +60,8 @@
     "@nx/nx-darwin-arm64": "18.0.3",
     "@nx/nx-darwin-x64": "18.0.3",
     "@nx/nx-linux-x64-gnu": "18.0.3",
-    "@nx/nx-win32-x64-msvc": "18.0.3"
-  },
-  "overrides": {
-    "vite": {
-      "rollup": "npm:@rollup/wasm-node"
-    }
+    "@nx/nx-win32-x64-msvc": "18.0.3",
+    "@rollup/rollup-linux-x64-gnu": "4.13.0"
   },
   "lint-staged": {
     "*.{js,json,md,ts}": [
