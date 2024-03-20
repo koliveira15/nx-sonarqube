@@ -7,9 +7,6 @@
     "url": "https://github.com/koliveira15/nx-sonarqube.git"
   },
   "scripts": {
-    "start": "nx serve",
-    "build": "nx build",
-    "test": "nx test",
     "pre-commit": "lint-staged",
     "prepare": "husky install"
   },
