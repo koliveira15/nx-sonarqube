@@ -13,6 +13,8 @@ export default defineConfig({
   vite: {
     cacheDir: path.resolve(workspaceRoot, 'node_modules', '.vite'),
   },
+  site: 'https://koliveira15.github.io',
+  // base: '/nx-sonarqube',
   integrations: [
     starlight({
       title: 'Docs',
