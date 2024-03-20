@@ -62,6 +62,11 @@
     "@nx/nx-linux-x64-gnu": "18.0.3",
     "@nx/nx-win32-x64-msvc": "18.0.3"
   },
+  "overrides": {
+    "vite": {
+      "rollup": "npm:@rollup/wasm-node"
+    }
+  },
   "lint-staged": {
     "*.{js,json,md,ts}": [
       "npx nx format:write --uncommitted"
