@@ -61,7 +61,8 @@
     "@nx/nx-darwin-x64": "18.1.2",
     "@nx/nx-linux-x64-gnu": "18.1.2",
     "@nx/nx-win32-x64-msvc": "18.1.2",
-    "@rollup/rollup-linux-x64-gnu": "4.13.0"
+    "@rollup/rollup-linux-x64-gnu": "4.13.0",
+    "@pagefind/linux-x64": "1.0.4"
   },
   "lint-staged": {
     "*.{js,json,md,ts}": [
