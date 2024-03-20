@@ -10,12 +10,13 @@ function readJSONFile(filename) {
   }
 }
 function jsonToMarkdown(jsonObject, isExecutor) {
-  let markdown = '---\n' + `title: '${jsonObject.title}'\n` + '---\n\n';
+  let markdown =
+    '---\n' + `title: '${jsonObject.title}'\n` + 'editUrl: false\n' + '---\n';
   if (isExecutor) {
-    markdown += `import { Code } from '@astrojs/starlight/components';\n`;
+    markdown += `\nimport { Code } from '@astrojs/starlight/components';\n`;
     markdown += `import exampleFile from '${jsonObject.example}';\n\n`;
   } else {
-    markdown += '\n'
+    markdown += '\n';
   }
   markdown += `${jsonObject.description}\n\n`;
 
@@ -23,7 +24,10 @@ function jsonToMarkdown(jsonObject, isExecutor) {
   if (isExecutor) {
     markdown += `<Code code={exampleFile} lang="json" title="project.json"/>\n\n`;
   } else {
-    markdown += "```sh\nnpx nx g @koliveira15/nx-sonarqube:" + jsonObject.title + "\n```\n\n";
+    markdown +=
+      '```sh\nnpx nx g @koliveira15/nx-sonarqube:' +
+      jsonObject.title +
+      '\n```\n\n';
   }
 
   markdown += `## Options\n\n`;
