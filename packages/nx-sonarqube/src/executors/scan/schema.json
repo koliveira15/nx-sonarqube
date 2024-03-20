@@ -2,8 +2,9 @@
   "version": 2,
   "outputCapture": "direct-nodejs",
   "$schema": "http://json-schema.org/schema",
-  "title": "SonarQube Scanner Executor",
-  "description": "Scans and uploads test coverage based on SonarQube options (https://docs.sonarqube.org/latest/analysis/analysis-parameters/)",
+  "title": "scan",
+  "description": "Scans and uploads test coverage based on [Sonar Analysis Parameters](https://docs.sonarqube.org/latest/analysis/analysis-parameters/)",
+  "example": "../../../../data/examples/plugin/scan.json?raw",
   "type": "object",
   "properties": {
     "hostUrl": {

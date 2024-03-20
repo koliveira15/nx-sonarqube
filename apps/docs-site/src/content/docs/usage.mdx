@@ -1,0 +1,43 @@
+---
+title: Usage
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Use the following commands to configure Sonar scanning for your project(s)
+
+## Generator
+
+```sh
+npx nx g @koliveira15/nx-sonarqube:config my-project
+```
+
+## Executor
+
+<Tabs>
+  <TabItem label="project">
+
+    ```sh
+    npx nx sonar my-project
+    ```
+
+  </TabItem>
+  <TabItem label="affected">
+
+    ```sh
+    npx nx affected --target sonar --parallel 1
+    ```
+
+  </TabItem>
+  <TabItem label="run-many">
+
+    ```sh
+    npx nx run-many --target sonar --projects my-project my-second-project --parallel 1
+    ```
+
+  </TabItem>
+</Tabs>
+
+:::caution
+Due to limitations with the Sonar scanner, you cannot run more than one scan in parallel on an agent or machine
+:::

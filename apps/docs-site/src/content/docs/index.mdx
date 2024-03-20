@@ -1,0 +1,27 @@
+---
+title: 'nx-sonarqube'
+description: Get started building your docs site with Starlight.
+template: splash
+hero:
+  tagline: Enhance Your Code. Elevate Your Quality. Scan Seamlessly.
+  image:
+    file: ../../assets/radar.webp
+  actions:
+    - text: Get Started
+      link: /getting-started
+      icon: right-arrow
+      variant: primary
+editUrl: false
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+Powered by:
+
+<CardGrid>
+  <LinkCard title="Nx" href="https://nx.dev/"></LinkCard>
+  <LinkCard
+    title="Sonar"
+    href="https://www.sonarsource.com/products/sonarqube/"
+  ></LinkCard>
+</CardGrid>

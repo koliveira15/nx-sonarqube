@@ -1,8 +1,5 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "affected": {
-    "defaultBase": "origin/main"
-  },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
@@ -30,20 +27,6 @@
       "cache": true
     }
   },
-  "plugins": [
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      }
-    },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    }
-  ],
   "workspaceLayout": {
     "appsDir": "e2e",
     "libsDir": "packages"
@@ -61,5 +44,7 @@
     ]
   },
   "nxCloudAccessToken": "MWM4ZWZiNDgtOGYwMi00ZDI3LTllMDUtYTNkYTExMmU3MDY2fHJlYWQ=",
-  "parallel": 3
+  "parallel": 3,
+  "defaultBase": "origin/main",
+  "useInferencePlugins": false
 }

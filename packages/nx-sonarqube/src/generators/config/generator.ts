@@ -63,7 +63,10 @@ function updateProjectConfig(
   } else {
     projectConfiguration.targets.sonar = {
       executor: '@koliveira15/nx-sonarqube:scan',
-      options: { ...options },
+      options: {
+        hostUrl: options.hostUrl,
+        projectKey: options.projectKey,
+      },
     };
     updateProjectConfiguration(tree, options.name, projectConfiguration);
   }
