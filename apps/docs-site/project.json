@@ -11,18 +11,32 @@
         "command": "astro build --root apps/docs-site",
         "forwardAllArgs": true
       },
-      "dependsOn": [
-        {
-          "projects": ["koliveira15"],
-          "target": "build-reference-docs"
-        }
+      "dependsOn": ["build-docs"]
+    },
+    "build-docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node tools/scripts/build-tool-docs.ts"
+      },
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/tools/scripts/build-tool-docs.ts",
+        "{projectRoot}/src/executors",
+        "{projectRoot}/src/generators"
+      ],
+      "outputs": [
+        "{workspaceRoot}/apps/docs-site/src/content/docs/reference/Executors",
+        "{workspaceRoot}/apps/docs-site/src/content/docs/reference/Generators"
       ]
     },
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "astro dev --root apps/docs-site",
-        "forwardAllArgs": true
+        "commands": [
+          "nodemon --watch tools/scripts --watch packages/nx-sonarqube --exec ts-node tools/scripts/build-tool-docs.ts",
+          "astro dev --root apps/docs-site"
+        ],
+        "parallel": true
       }
     }
   },

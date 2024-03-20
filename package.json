@@ -7,11 +7,6 @@
     "url": "https://github.com/koliveira15/nx-sonarqube.git"
   },
   "scripts": {
-    "start": "nx serve",
-    "build": "nx build",
-    "build-reference-docs": "node ./tools/build-tool-docs.js",
-    "serve-reference-docs": "nodemon ./tools/build-tool-docs.js",
-    "test": "nx test",
     "pre-commit": "lint-staged",
     "prepare": "husky install"
   },
@@ -68,25 +63,5 @@
     "*.{js,json,md,ts}": [
       "npx nx format:write --uncommitted"
     ]
-  },
-  "nx": {
-    "includedScripts": [
-      "build-reference-docs",
-      "serve-reference-docs"
-    ],
-    "targets": {
-      "build-reference-docs": {
-        "cache": true,
-        "inputs": [
-          "{workspaceRoot}/tools/build-tool-docs.js",
-          "{workspaceRoot}/packages/nx-sonarqube/src/executors",
-          "{workspaceRoot}/packages/nx-sonarqube/src/generators"
-        ],
-        "outputs": [
-          "{workspaceRoot}/apps/docs-site/src/content/docs/reference/Executors",
-          "{workspaceRoot}/apps/docs-site/src/content/docs/reference/Generators"
-        ]
-      }
-    }
   }
 }

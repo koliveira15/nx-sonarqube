@@ -19,7 +19,9 @@ jobs:
       main-branch-name: main
       number-of-agents: 3
       parallel-commands-on-agents: |
-        npx nx affected -t lint & npx nx affected -t test --configuration=ci & npx nx affected -t build
+        npx nx affected -t lint --parallel --exclude koliveira15
+        npx nx affected -t test --parallel --exclude koliveira15
+        npx nx affected -t build --parallel --exclude koliveira15
 
   agents:
     name: Nx Cloud - Agents
