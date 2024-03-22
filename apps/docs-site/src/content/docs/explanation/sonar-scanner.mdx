@@ -1,0 +1,48 @@
+---
+title: Sonar Scanner
+sidebar:
+  order: 2
+---
+
+import { Code } from '@astrojs/starlight/components';
+export const projectJson  = `{
+  "name": "app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/app/src",
+  "targets": {
+    "sonar": {
+      "executor": "@koliveira15/nx-sonarqube:scan",
+      "options": {
+        "hostUrl": "https://sonarcloud.io",
+        "projectKey": "app",
+        "extra": {
+          "sonar.log.level": "DEBUG"
+        }
+      }
+    }
+  }
+}`
+
+The Nx plugin wraps the [sonarqube-scanner](https://github.com/SonarSource/sonar-scanner-npm) npm package.
+Options for the scanner are passed in via the [executor properties](/reference/executors/scan/#options) into the
+[`getScannerOptions()`](https://github.com/koliveira15/nx-sonarqube/blob/main/packages/nx-sonarqube/src/executors/scan/utils/utils.ts) method of the plugin.
+
+The following sections are explain how to pass other options into the scanner outside the executor options:
+
+## Sonar Environment Variables
+
+You can pass extra options to the scanner by using environment variables like so:
+
+```shell
+SONAR_LOG_LEVEL=DEBUG npx nx sonar my-app
+```
+
+Will be combined into the period-delimited string as `sonar.log.level=DEBUG`
+
+## Extra Property
+
+The scan executor offers an [extra](/reference/executors/scan/#extra) property in which other sonar scanner options
+can be passed into the scanner that the scan executor doesn't officially support.
+
+<Code code={projectJson} lang="json" title="apps/app/project.json" mark="extra"/>

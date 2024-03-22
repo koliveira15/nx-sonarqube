@@ -33,7 +33,7 @@
       "type": "string"
     },
     "projectVersion": {
-      "description": "The project version.",
+      "description": "The project version. Defaults to package.json version at the root of the project, otherwise it will use the workspace package.json version",
       "type": "string"
     },
     "qualityGate": {
@@ -65,6 +65,13 @@
       "description": "Add more detail to both client and server-side analysis logs",
       "type": "boolean",
       "default": false
+    },
+    "extra": {
+      "description": "Extra sonar scanner options (e.g. `sonar.dependencyCheck.htmlReportPath`)",
+      "type": "object",
+      "patternProperties": {
+        "^.+$": { "type": "string" }
+      }
     }
   },
   "required": ["hostUrl", "projectKey"]

@@ -6,7 +6,7 @@
     "url": "https://github.com/koliveira15/nx-sonarqube.git",
     "directory": "packages/nx-sonarqube"
   },
-  "version": "1.0.0",
+  "version": "4.0.1",
   "main": "src/index.js",
   "generators": "./generators.json",
   "executors": "./executors.json",

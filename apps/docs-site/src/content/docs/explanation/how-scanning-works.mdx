@@ -1,5 +1,7 @@
 ---
 title: How Scanning Works
+sidebar:
+  order: 1
 ---
 
 import { Code } from '@astrojs/starlight/components';
@@ -35,6 +37,11 @@ The project `app` has the following dependencies that will be included in the sc
 
 Based on the dependency graph above, the following is added to the Sonar analysis:
 
+```shell
+Included sources paths: apps/app/src,libs/lib-a/src,libs/lib-b/src,libs/lib-c/src,libs/lib-d/src,libs/lib-e/src
+Included lcov paths: coverage/apps/app,coverage/libs/lib-a,coverage/libs/lib-b,coverage/libs/lib-c,coverage/libs/lib-d,coverage/libs/lib-e
+```
+
 ### Source Code
 
 The source code is the code which, presumably, is included in your production build output. This is the code that
@@ -44,6 +51,10 @@ The source code paths are included in the scanner by using the respective `proje
 [sourceRoot](https://nx.dev/nx-api/devkit/documents/ProjectConfiguration#sourceroot) property:
 
 <Code code={projectJson} lang="json" title="apps/app/project.json" mark={['"apps/app/src"']}/>
+
+:::caution
+Source code paths should not be overridden as this is core feature of the plugin which uses the dependency graph
+:::
 
 :::caution
 The scanner will default to using project root (e.g., `apps/app`) if `sourceRoot` is not present since it can be an
@@ -66,3 +77,7 @@ or [Vitest](https://nx.dev/nx-api/vite/executors/test) configurations:
     <Code code={viteConfig} lang="typescript" title="libs/lib-e/vitest.config.ts" mark={["'../../coverage/libs/lib-e'"]}/>
   </TabItem>
 </Tabs>
+
+:::caution
+Coverage paths should not be overridden as this is core feature of the plugin which uses the dependency graph
+:::

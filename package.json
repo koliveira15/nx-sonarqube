@@ -8,7 +8,8 @@
   },
   "scripts": {
     "pre-commit": "lint-staged",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "ci": "npx nx run-many --targets build,lint,test --parallel --exclude koliveira15"
   },
   "private": true,
   "devDependencies": {
