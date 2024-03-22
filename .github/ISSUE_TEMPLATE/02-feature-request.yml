@@ -1,6 +1,6 @@
-name: Bug Report
-description: Report a bug in @koliveira15/nx-sonarqube
-labels: [bug]
+name: Feature Request
+description: Request a new or improved a feature in @koliveira15/nx-sonarqube
+labels: [enhancement]
 
 body:
   - type: markdown
@@ -9,16 +9,10 @@ body:
         Thanks for reporting an issue :white_check_mark:
         Please search GitHub for a similar [issue](https://github.com/koliveira15/nx-sonarqube/issues) or [PR](https://github.com/koliveira15/nx-sonarqube/pulls) before submitting a new issue.
 
-  - type: textarea
-    id: environment
-    attributes:
-      label: If possible, please provide a reproduction repository you discovered this bug in.
-      description: GitHub URL
-
   - type: dropdown
-    id: type_bug
+    id: type_feature
     attributes:
-      label: Which area/package is the issue in?
+      label: Which scope/s are relevant/related to the feature request?
       options:
         - "@koliveira15/nx-sonarqube"
         - Astro Docs Site
@@ -27,33 +21,22 @@ body:
       required: true
 
   - type: textarea
-    id: description
+    id: information
     attributes:
-      label: Description
+      label: Information
+      description: Tell us what you want to be added to @koliveira15/nx-sonarqube
     validations:
       required: true
 
   - type: textarea
-    id: nx-report
+    id: alternatives
     attributes:
-      label: If applicable, please provide the Nx report
-      description: Run "npx nx report"
-
-  - type: textarea
-    id: exception-or-error
-    attributes:
-      label: Please provide the exception or error you saw
-      render: true
-
-  - type: textarea
-    id: other
-    attributes:
-      label: Other information
+      label: Describe any alternatives/workarounds you're currently using
 
   - type: checkboxes
     id: assistance
     attributes:
-      label: I would be willing to submit a PR to fix this issue
+      label: I would be willing to submit a PR to provide this feature
       description: Assistance is provided if you need help submitting a pull request
       options:
         - label: 'Yes'
