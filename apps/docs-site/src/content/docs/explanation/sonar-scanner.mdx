@@ -5,7 +5,7 @@ sidebar:
 ---
 
 import { Code } from '@astrojs/starlight/components';
-export const projectJson  = `{
+export const projectJson = `{
   "name": "app",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
@@ -22,7 +22,7 @@ export const projectJson  = `{
       }
     }
   }
-}`
+}`;
 
 The Nx plugin wraps the [sonarqube-scanner](https://github.com/SonarSource/sonar-scanner-npm) npm package.
 Options for the scanner are passed in via the [executor properties](/reference/executors/scan/#options) into the
@@ -45,4 +45,9 @@ Will be combined into the period-delimited string as `sonar.log.level=DEBUG`
 The scan executor offers an [extra](/reference/executors/scan/#extra) property in which other sonar scanner options
 can be passed into the scanner that the scan executor doesn't officially support.
 
-<Code code={projectJson} lang="json" title="apps/app/project.json" mark="extra"/>
+<Code
+  code={projectJson}
+  lang="json"
+  title="apps/app/project.json"
+  mark="extra"
+/>

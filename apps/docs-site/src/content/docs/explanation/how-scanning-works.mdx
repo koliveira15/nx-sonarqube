@@ -20,18 +20,20 @@ important features is to calculate how projects depend on each other called the 
 The dependency graph is core to how the nx-sonarqube Nx Plugin can determine which projects to include in a given scan.
 
 There are three kinds of dependencies the graph can calculate:
-  * [Static](https://nx.dev/extending-nx/recipes/project-graph-plugins#static-dependencies) - a hardcoded import
-  * [Dynamic](https://nx.dev/extending-nx/recipes/project-graph-plugins#dynamic-dependencies) - a runtime import (e.g. lazy-loaded routes)
-  * [Implicit](https://nx.dev/extending-nx/recipes/project-graph-plugins#implicit-dependencies) - not associated with any file or code
+
+- [Static](https://nx.dev/extending-nx/recipes/project-graph-plugins#static-dependencies) - a hardcoded import
+- [Dynamic](https://nx.dev/extending-nx/recipes/project-graph-plugins#dynamic-dependencies) - a runtime import (e.g. lazy-loaded routes)
+- [Implicit](https://nx.dev/extending-nx/recipes/project-graph-plugins#implicit-dependencies) - not associated with any file or code
 
 Here is an example of the dependency graph for a project `app` to be scanned:
 
 ![dep-graph](../../../assets/dep-graph.png)
 
 The project `app` has the following dependencies that will be included in the scan:
-  * 4 static (`app`, `lib-a`, `lib-b`, `lib-c`)
-  * 1 dynamic (`lib-d`)
-  * 1 implicit (`lib-e`)
+
+- 4 static (`app`, `lib-a`, `lib-b`, `lib-c`)
+- 1 dynamic (`lib-d`)
+- 1 implicit (`lib-e`)
 
 ## What is Included?
 
@@ -50,7 +52,12 @@ developers would like scanned to find bugs, code smells, etc.
 The source code paths are included in the scanner by using the respective `project.json`'s
 [sourceRoot](https://nx.dev/nx-api/devkit/documents/ProjectConfiguration#sourceroot) property:
 
-<Code code={projectJson} lang="json" title="apps/app/project.json" mark={['"apps/app/src"']}/>
+<Code
+  code={projectJson}
+  lang="json"
+  title="apps/app/project.json"
+  mark={['"apps/app/src"']}
+/>
 
 :::caution
 Source code paths should not be overridden as this is core feature of the plugin which uses the dependency graph
@@ -71,10 +78,20 @@ or [Vitest](https://nx.dev/nx-api/vite/executors/test) configurations:
 
 <Tabs>
   <TabItem label="Jest">
-    <Code code={jestConfig} lang="typescript" title="libs/lib-a/jest.config.ts" mark={["'../../coverage/libs/lib-a'"]}/>
+    <Code
+      code={jestConfig}
+      lang="typescript"
+      title="libs/lib-a/jest.config.ts"
+      mark={["'../../coverage/libs/lib-a'"]}
+    />
   </TabItem>
   <TabItem label="Vitest">
-    <Code code={viteConfig} lang="typescript" title="libs/lib-e/vitest.config.ts" mark={["'../../coverage/libs/lib-e'"]}/>
+    <Code
+      code={viteConfig}
+      lang="typescript"
+      title="libs/lib-e/vitest.config.ts"
+      mark={["'../../coverage/libs/lib-e'"]}
+    />
   </TabItem>
 </Tabs>
 
