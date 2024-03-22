@@ -20,7 +20,7 @@ body:
     attributes:
       label: Which area/package is the issue in?
       options:
-        - @koliveira15/nx-sonarqube
+        - "@koliveira15/nx-sonarqube"
         - Astro Docs Site
         - Other
     validations:
