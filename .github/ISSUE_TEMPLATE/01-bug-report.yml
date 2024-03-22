@@ -1,0 +1,54 @@
+name: Bug Report
+description: Report a bug in @koliveira15/nx-sonarqube
+labels: [bug]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue :white_check_mark:
+        Please search GitHub for a similar [issue](https://github.com/koliveira15/nx-sonarqube/issues) or [PR](https://github.com/koliveira15/nx-sonarqube/pulls) before submitting a new issue.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: If possible, please provide a reproduction repository you discovered this bug in.
+      description: GitHub URL
+
+  - type: dropdown
+    id: type_bug
+    attributes:
+      label: Which area/package is the issue in?
+      options:
+        - @koliveira15/nx-sonarqube
+        - Astro Docs Site
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: textarea
+    id: exception-or-error
+    attributes:
+      label: Please provide the exception or error you saw
+      render: true
+
+  - type: textarea
+    id: other
+    attributes:
+      label: Other information
+
+  - type: checkboxes
+    id: assistance
+    attributes:
+      label: I would be willing to submit a PR to fix this issue
+      description: Assistance is provided if you need help submitting a pull request
+      options:
+        - label: 'Yes'
+        - label: 'No'
