@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting an issue :white_check_mark:
+        Thanks for submitting a feature request :white_check_mark:
         Please search GitHub for a similar [issue](https://github.com/koliveira15/nx-sonarqube/issues) or [PR](https://github.com/koliveira15/nx-sonarqube/pulls) before submitting a new issue.
 
   - type: dropdown
