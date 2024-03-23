@@ -13,6 +13,8 @@
   },
   "private": true,
   "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
     "@nx/devkit": "18.1.2",
     "@nx/eslint": "18.1.2",
     "@nx/eslint-plugin": "18.1.2",
@@ -57,8 +59,8 @@
     "@nx/nx-darwin-x64": "18.1.2",
     "@nx/nx-linux-x64-gnu": "18.1.2",
     "@nx/nx-win32-x64-msvc": "18.1.2",
-    "@rollup/rollup-linux-x64-gnu": "4.13.0",
-    "@pagefind/linux-x64": "1.0.4"
+    "@pagefind/linux-x64": "1.0.4",
+    "@rollup/rollup-linux-x64-gnu": "4.13.0"
   },
   "lint-staged": {
     "*.{js,json,md,ts}": [
