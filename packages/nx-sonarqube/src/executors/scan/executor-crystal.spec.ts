@@ -233,7 +233,7 @@ describe('Scan Executor - Crystal', (): void => {
         hostUrl: 'url',
         projectKey: 'key',
         qualityGate: true,
-        skipImplicitDeps: true,
+        skipDependencyTypes: ['implicit'],
       },
       context
     );
