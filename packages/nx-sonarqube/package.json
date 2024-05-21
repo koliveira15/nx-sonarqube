@@ -11,10 +11,10 @@
   "generators": "./generators.json",
   "executors": "./executors.json",
   "peerDependencies": {
-    "@nx/devkit": ">= 16 < 19",
+    "@nx/devkit": ">= 16 < 20",
     "@phenomnomnominal/tsquery": "5.0.1",
-    "sonarqube-scanner": "3.1.0",
-    "nx": ">= 16 < 19",
+    "sonarqube-scanner": "3.5.0",
+    "nx": ">= 16 < 20",
     "tslib": ">= 2.3.0 < 3"
   }
 }
