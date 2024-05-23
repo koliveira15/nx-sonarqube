@@ -1,0 +1,21 @@
+---
+title: Compatibility
+---
+
+import { Code } from '@astrojs/starlight/components';
+export const output = `{
+  '@nx/devkit': '>= 16 < 19',
+  '@phenomnomnominal/tsquery': '5.0.1',
+  'sonarqube-scanner': '3.1.0',
+  nx: '>= 16 < 20',
+  tslib: '>= 2.3.0 < 3
+}`;
+
+For compatibilities with Nx versions, you can check the [Releases](https://github.com/koliveira15/nx-sonarqube/releases)
+page in GitHub or run the following command where `x.x.x` is the semver version of the package:
+
+```shell
+npm info @koliveira15/nx-sonarqube@x.x.x peerDependencies
+```
+
+<Code code={output} lang="json" title="output" mark="nx: '>= 16 < 20'" />
