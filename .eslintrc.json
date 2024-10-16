@@ -24,12 +24,17 @@
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
-      "rules": {}
+      "rules": {
+        "no-extra-semi": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nx/javascript"],
-      "rules": {}
+      "rules": {
+        "no-extra-semi": "off"
+      }
     },
     {
       "files": "*.json",

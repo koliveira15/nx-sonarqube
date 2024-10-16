@@ -42,7 +42,12 @@ describe('Scan Executor - Crystal', (): void => {
       isVerbose: false,
       root: '',
       projectName: 'app1',
-      workspace: {
+      nxJsonConfiguration: {},
+      projectGraph: {
+        nodes: {},
+        dependencies: {},
+      },
+      projectsConfigurations: {
         version: 2,
         projects: {
           app1: {

@@ -43,7 +43,12 @@ describe('Scan Executor', (): void => {
       isVerbose: false,
       root: '',
       projectName: 'app1',
-      workspace: {
+      nxJsonConfiguration: {},
+      projectGraph: {
+        nodes: {},
+        dependencies: {},
+      },
+      projectsConfigurations: {
         version: 2,
         projects: {
           app1: {
@@ -264,7 +269,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets = {};
+    newContext.projectsConfigurations.projects['app1'].targets = {};
 
     const output = await sonarScanExecutor(
       {

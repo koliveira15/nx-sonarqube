@@ -93,7 +93,7 @@ export async function determinePaths(
   const sources: string[] = [];
   const lcovPaths: string[] = [];
   const deps = await getDependentPackagesForProject(context.projectName);
-  const projectConfiguration = context.workspace.projects[context.projectName];
+  const projectConfiguration = context.projectsConfigurations.projects[context.projectName];
   deps.workspaceLibraries.push({
     name: context.projectName,
     type: DependencyType.static,
@@ -314,7 +314,7 @@ export function projectPackageVersion(
   if (version) {
     return version;
   }
-  version = getPackageJsonVersion(context.workspace.projects[projectName].root);
+  version = getPackageJsonVersion(context.projectsConfigurations.projects[projectName].root);
   if (version) {
     return version;
   }

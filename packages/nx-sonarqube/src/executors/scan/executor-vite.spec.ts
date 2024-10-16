@@ -43,7 +43,12 @@ describe('Scan Executor', (): void => {
       isVerbose: false,
       root: '',
       projectName: 'app1',
-      workspace: {
+      nxJsonConfiguration: {},
+      projectGraph: {
+        nodes: {},
+        dependencies: {},
+      },
+      projectsConfigurations: {
         version: 2,
         projects: {
           app1: {
@@ -221,7 +226,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets = {};
+    newContext.projectsConfigurations.projects['app1'].targets = {};
 
     const output = await sonarScanExecutor(
       {
@@ -239,7 +244,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets.test.options = {};
+    newContext.projectsConfigurations.projects['app1'].targets.test.options = {};
 
     const output = await sonarScanExecutor(
       {
@@ -257,7 +262,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets.test.options = {
+    newContext.projectsConfigurations.projects['app1'].targets.test.options = {
       coverage: true
     };
 
@@ -276,7 +281,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets.test.options = {
+    newContext.projectsConfigurations.projects['app1'].targets.test.options = {
       coverage: true
     };
 
@@ -306,7 +311,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets.test.options = {
+    newContext.projectsConfigurations.projects['app1'].targets.test.options = {
       coverage: true
     };
 
@@ -344,7 +349,7 @@ describe('Scan Executor', (): void => {
 
   it('should return project test config coverage directory path (from the options)', async () => {
     const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
-    testContext.workspace.projects.app1.targets.test.options.reportsDirectory =
+    testContext.projectsConfigurations.projects.app1.targets.test.options.reportsDirectory =
       'coverage/test/apps/app1';
     const paths = await determinePaths(
       commonOptions,
@@ -371,7 +376,7 @@ describe('Scan Executor', (): void => {
       );
       `)
     const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
-    testContext.workspace.projects.app1.targets.test.options = {
+    testContext.projectsConfigurations.projects.app1.targets.test.options = {
       configFile: '../../vite-custom-coverage/apps/app1'
     };
 
@@ -388,7 +393,7 @@ describe('Scan Executor', (): void => {
     jest.spyOn(fs, 'existsSync').mockReturnValue(true)
     jest.spyOn(fs, 'readFileSync').mockReturnValue(viteConfig)
     const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
-    testContext.workspace.projects.app1.targets.test.options = undefined;
+    testContext.projectsConfigurations.projects.app1.targets.test.options = undefined;
 
     const paths = await determinePaths(
       commonOptions,
@@ -403,7 +408,7 @@ describe('Scan Executor', (): void => {
     jest.spyOn(fs, 'existsSync').mockReturnValueOnce(false).mockReturnValue(true)
     jest.spyOn(fs, 'readFileSync').mockReturnValue(viteConfig)
     const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
-    testContext.workspace.projects.app1.targets.test.options = {};
+    testContext.projectsConfigurations.projects.app1.targets.test.options = {};
 
     const paths = await determinePaths(
       commonOptions,
@@ -418,7 +423,7 @@ describe('Scan Executor', (): void => {
     jest.spyOn(fs, 'existsSync').mockReturnValueOnce(false).mockReturnValue(true)
     jest.spyOn(fs, 'readFileSync').mockReturnValue(viteConfig)
     const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
-    testContext.workspace.projects.app1.targets.test.options = {};
+    testContext.projectsConfigurations.projects.app1.targets.test.options = {};
 
     const paths = await determinePaths(
       commonOptions,
