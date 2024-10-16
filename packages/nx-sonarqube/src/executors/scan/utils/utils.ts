@@ -9,7 +9,7 @@ import {
   readCachedProjectGraph,
   readJsonFile,
 } from '@nx/devkit';
-import { tsquery } from '@phenomnomnominal/tsquery';
+import { ast, query, ScriptKind } from '@phenomnomnominal/tsquery';
 import * as sonarQubeScanner from 'sonarqube-scanner';
 import { TargetConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { existsSync, readFileSync } from 'fs';
@@ -142,13 +142,12 @@ export async function determinePaths(
           }
 
           const jestConfig = readFileSync(jestConfigPath, 'utf-8');
-          const ast = tsquery.ast(jestConfig);
-          const nodes = tsquery(
-            ast,
-            'Identifier[name="coverageDirectory"] ~ StringLiteral',
-            { visitAllChildren: true }
+          const astOutput = ast(jestConfig);
+          const nodes = query(
+            astOutput as unknown as string,
+            'PropertyAssignment:has(Identifier[name="coverageDirectory"]) StringLiteral',
+            ScriptKind.TS,
           );
-
           if (nodes.length) {
             lcovPaths.push(
               joinPathFragments(
@@ -180,11 +179,11 @@ export async function determinePaths(
           }
 
           const config = readFileSync(viteConfigPath, 'utf-8');
-          const ast = tsquery.ast(config);
-          const nodes = tsquery(
-            ast,
-            'Identifier[name="reportsDirectory"] ~ StringLiteral',
-            { visitAllChildren: true }
+          const astOutput = ast(config);
+          const nodes = query(
+            astOutput as unknown as string,
+            'PropertyAssignment:has(Identifier[name="reportsDirectory"]) StringLiteral',
+            ScriptKind.TS
           );
 
           if (nodes.length) {
