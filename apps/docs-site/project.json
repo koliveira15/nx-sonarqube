@@ -16,7 +16,7 @@
     "build-docs": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node tools/scripts/build-tool-docs.ts"
+        "command": "ts-node --project tools/tsconfig.tools.json tools/scripts/build-tool-docs.ts"
       },
       "cache": true,
       "inputs": [
