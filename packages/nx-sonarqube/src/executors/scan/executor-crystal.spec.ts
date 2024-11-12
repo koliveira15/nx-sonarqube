@@ -6,9 +6,7 @@ import {
   readJsonFile,
 } from '@nx/devkit';
 import * as sonarQubeScanner from 'sonarqube-scanner';
-import * as childProcess from 'child_process';
 import * as fs from 'fs';
-import { getScannerOptions } from './utils/utils';
 
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;
