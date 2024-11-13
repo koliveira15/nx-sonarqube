@@ -13,6 +13,7 @@
         "tsConfig": "packages/nx-sonarqube/tsconfig.lib.json",
         "assets": [
           "packages/nx-sonarqube/*.md",
+          "LICENSE",
           {
             "input": "./packages/nx-sonarqube/src",
             "glob": "**/!(*.ts)",
