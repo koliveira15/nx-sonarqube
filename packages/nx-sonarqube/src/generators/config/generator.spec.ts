@@ -9,6 +9,9 @@ import {
 import sonarQubeConfigGenerator from './generator';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 
+// temporary mock until Jest 30. Issue: https://github.com/nrwl/nx/issues/26387#issuecomment-2191174250
+jest.mock('prettier', () => null);
+
 describe('Configuration generator', () => {
   let tree: Tree;
 

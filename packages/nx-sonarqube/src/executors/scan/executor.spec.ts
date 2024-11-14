@@ -233,7 +233,7 @@ describe('Scan Executor', (): void => {
 
   it('should scan project and dependencies', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const output = await sonarScanExecutor(
       {
@@ -250,7 +250,7 @@ describe('Scan Executor', (): void => {
 
   it('should scan project and dependencies with branch name', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const output = await sonarScanExecutor(
       {
@@ -265,7 +265,7 @@ describe('Scan Executor', (): void => {
 
   it('should scan project and dependencies & skip projects with no test target', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const newContext = { ...context };
     newContext.projectsConfigurations.projects['app1'].targets = {};
@@ -287,7 +287,7 @@ describe('Scan Executor', (): void => {
     ).mockImplementation(() => {
       return {};
     });
-    sonarQubeScanner.async.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
     process.env['SONAR_BRANCH'] = 'main';
     process.env['SONAR_LOG_LEVEL_EXTENDED'] = 'DEBUG';
     process.env['SONAR_VERBOSE'] = 'true';

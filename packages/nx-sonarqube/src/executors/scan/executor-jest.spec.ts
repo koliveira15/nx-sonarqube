@@ -229,7 +229,7 @@ describe('Scan Executor', (): void => {
 
   it('should scan project and dependencies & skip projects with no test target', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const newContext = { ...context };
     newContext.projectsConfigurations.projects['app1'].targets = {};
@@ -246,7 +246,7 @@ describe('Scan Executor', (): void => {
   });
 
   it('should skip dependency if jest.config.ts does not exist', async () => {
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
     jest.spyOn(fs, 'existsSync').mockReturnValue(false);
 
@@ -263,7 +263,7 @@ describe('Scan Executor', (): void => {
 
   it('should scan project and dependencies & skip projects with no jestConfig', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const newContext = { ...context };
     newContext.projectsConfigurations.projects['app1'].targets.test.options = {};
@@ -282,7 +282,7 @@ describe('Scan Executor', (): void => {
   it('should scan project and dependencies & skip projects with no coverageDirectory', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue('');
 
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const output = await sonarScanExecutor(
       {
@@ -297,7 +297,7 @@ describe('Scan Executor', (): void => {
 
   it('should error on sonar scanner issue', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.async.mockImplementation(() => {
+    jest.spyOn(sonarQubeScanner, 'scan').mockImplementation(() => {
       throw new Error();
     });
 
