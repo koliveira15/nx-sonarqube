@@ -36,66 +36,6 @@ describe('Scan Executor', (): void => {
   beforeEach((): void => {
     (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockReset();
 
-    context = {
-      cwd: '',
-      isVerbose: false,
-      root: '',
-      projectName: 'app1',
-      workspace: {
-        version: 2,
-        projects: {
-          app1: {
-            root: 'apps/app1',
-            sourceRoot: 'apps/app1/src',
-            targets: {
-              test: {
-                executor: '@nx/jest:jest',
-                options: {
-                  jestConfig: 'jest.config.ts',
-                },
-              },
-            },
-          },
-          lib1: {
-            root: 'libs/lib1',
-            sourceRoot: 'libs/lib1/src',
-            targets: {
-              test: {
-                executor: '@nx/jest:jest',
-                options: {
-                  jestConfig: 'jest.config.ts',
-                },
-              },
-            },
-          },
-          lib2: {
-            root: 'libs/lib2',
-            sourceRoot: 'libs/lib2/src',
-            targets: {
-              test: {
-                executor: '@nx/jest:jest',
-                options: {
-                  jestConfig: 'jest.config.ts',
-                },
-              },
-            },
-          },
-          lib3: {
-            root: 'libs/lib3',
-            sourceRoot: 'libs/lib3/src',
-            targets: {
-              test: {
-                executor: '@nx/jest:jest',
-                options: {
-                  jestConfig: 'jest.config.ts',
-                },
-              },
-            },
-          },
-        },
-      },
-    };
-
     projectGraph = {
       dependencies: {
         app1: [
@@ -203,6 +143,68 @@ describe('Scan Executor', (): void => {
       },
     };
 
+    context = {
+      cwd: '',
+      isVerbose: false,
+      root: '',
+      projectName: 'app1',
+      nxJsonConfiguration: {},
+      projectGraph: projectGraph,
+      projectsConfigurations: {
+        version: 2,
+        projects: {
+          app1: {
+            root: 'apps/app1',
+            sourceRoot: 'apps/app1/src',
+            targets: {
+              test: {
+                executor: '@nx/jest:jest',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+          lib1: {
+            root: 'libs/lib1',
+            sourceRoot: 'libs/lib1/src',
+            targets: {
+              test: {
+                executor: '@nx/jest:jest',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+          lib2: {
+            root: 'libs/lib2',
+            sourceRoot: 'libs/lib2/src',
+            targets: {
+              test: {
+                executor: '@nx/jest:jest',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+          lib3: {
+            root: 'libs/lib3',
+            sourceRoot: 'libs/lib3/src',
+            targets: {
+              test: {
+                executor: '@nx/jest:jest',
+                options: {
+                  jestConfig: 'jest.config.ts',
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
     jestConfig = `export default {
       displayName: 'app1',
       preset: '../../jest.preset.js',
@@ -230,7 +232,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets = {};
+    newContext.projectsConfigurations.projects['app1'].targets = {};
 
     const output = await sonarScanExecutor(
       {
@@ -264,7 +266,7 @@ describe('Scan Executor', (): void => {
     sonarQubeScanner.mockResolvedValue(true);
 
     const newContext = { ...context };
-    newContext.workspace.projects['app1'].targets.test.options = {};
+    newContext.projectsConfigurations.projects['app1'].targets.test.options = {};
 
     const output = await sonarScanExecutor(
       {
@@ -322,7 +324,7 @@ describe('Scan Executor', (): void => {
 
   it('should return project test config coverage directory path', async () => {
     const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
-    testContext.workspace.projects.app1.targets.test.options.coverageDirectory =
+    testContext.projectsConfigurations.projects.app1.targets.test.options.coverageDirectory =
       'coverage/test/apps/app1';
     const paths = await determinePaths(
       {

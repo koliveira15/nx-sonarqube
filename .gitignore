@@ -41,6 +41,7 @@ Thumbs.db
 
 # nx
 /.nx/cache
+.nx/workspace-data
 
 # Sonar
 .scannerwork

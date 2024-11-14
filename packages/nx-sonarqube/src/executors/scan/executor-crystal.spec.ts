@@ -35,66 +35,6 @@ describe('Scan Executor - Crystal', (): void => {
   beforeEach((): void => {
     (readJsonFile as jest.MockedFunction<typeof readJsonFile>).mockReset();
 
-    context = {
-      cwd: '',
-      isVerbose: false,
-      root: '',
-      projectName: 'app1',
-      workspace: {
-        version: 2,
-        projects: {
-          app1: {
-            root: 'apps/app1',
-            sourceRoot: 'apps/app1/src',
-            targets: {
-              test: {
-                executor: 'nx:run-commands',
-                options: {
-                  command: 'jest',
-                },
-              },
-            },
-          },
-          lib1: {
-            root: 'libs/lib1',
-            sourceRoot: 'libs/lib1/src',
-            targets: {
-              test: {
-                executor: 'nx:run-commands',
-                options: {
-                  command: 'jest',
-                },
-              },
-            },
-          },
-          lib2: {
-            root: 'libs/lib2',
-            sourceRoot: 'libs/lib2/src',
-            targets: {
-              test: {
-                executor: 'nx:run-commands',
-                options: {
-                  command: 'vitest',
-                },
-              },
-            },
-          },
-          lib3: {
-            root: 'libs/lib3',
-            sourceRoot: 'libs/lib3/src',
-            targets: {
-              test: {
-                executor: 'nx:run-commands',
-                options: {
-                  command: 'vitest',
-                },
-              },
-            },
-          },
-        },
-      },
-    };
-
     projectGraph = {
       dependencies: {
         app1: [
@@ -187,6 +127,68 @@ describe('Scan Executor - Crystal', (): void => {
           name: 'lib3',
           type: 'lib',
           data: {
+            root: 'libs/lib3',
+            sourceRoot: 'libs/lib3/src',
+            targets: {
+              test: {
+                executor: 'nx:run-commands',
+                options: {
+                  command: 'vitest',
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    context = {
+      cwd: '',
+      isVerbose: false,
+      root: '',
+      projectName: 'app1',
+      nxJsonConfiguration: {},
+      projectGraph: projectGraph,
+      projectsConfigurations: {
+        version: 2,
+        projects: {
+          app1: {
+            root: 'apps/app1',
+            sourceRoot: 'apps/app1/src',
+            targets: {
+              test: {
+                executor: 'nx:run-commands',
+                options: {
+                  command: 'jest',
+                },
+              },
+            },
+          },
+          lib1: {
+            root: 'libs/lib1',
+            sourceRoot: 'libs/lib1/src',
+            targets: {
+              test: {
+                executor: 'nx:run-commands',
+                options: {
+                  command: 'jest',
+                },
+              },
+            },
+          },
+          lib2: {
+            root: 'libs/lib2',
+            sourceRoot: 'libs/lib2/src',
+            targets: {
+              test: {
+                executor: 'nx:run-commands',
+                options: {
+                  command: 'vitest',
+                },
+              },
+            },
+          },
+          lib3: {
             root: 'libs/lib3',
             sourceRoot: 'libs/lib3/src',
             targets: {
