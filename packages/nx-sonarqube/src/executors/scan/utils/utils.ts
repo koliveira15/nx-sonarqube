@@ -164,17 +164,27 @@ export async function determinePaths(
             );
           }
         } else if (TestRunner.Vitest) {
-          const viteConfigPath: string = joinPathFragments(
-            context.root,
-            dep.projectRoot,
-            'vite.config.ts'
+          const viteConfigExtensions = ['.ts', '.js', '.mts', '.mjs'];
+          const viteConfigPaths = viteConfigExtensions.map((ext) =>
+            joinPathFragments(
+              context.root,
+              dep.projectRoot,
+              `vite.config${ext}`
+            )
           );
 
-          if (!existsSync(viteConfigPath)) {
-            logger.warn(
-              `Skipping ${dep.name} as the vite config file cannot be found`
-            );
+          const viteConfigPath = viteConfigPaths.find((path) =>
+            existsSync(path)
+          );
 
+          if (!viteConfigPath) {
+            logger.warn(
+              `Skipping ${
+                dep.name
+              } as no vite config file can be found. Checked extensions: ${viteConfigExtensions.join(
+                ', '
+              )}`
+            );
             return;
           }
 
