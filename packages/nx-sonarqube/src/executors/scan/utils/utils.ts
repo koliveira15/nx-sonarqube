@@ -216,7 +216,7 @@ export async function determinePaths(
 export async function scanner(
   options: ScanExecutorSchema,
   context: ExecutorContext
-): Promise<{ success: boolean }> {
+): Promise<{ success: void }> {
   const paths = await determinePaths(options, context);
 
   logger.log(`Included sources paths: ${paths.sources}`);
@@ -230,7 +230,7 @@ export async function scanner(
     paths.sources,
     paths.lcovPaths
   );
-  const success = await sonarQubeScanner.async({
+  const success = await sonarQubeScanner.scan({
     serverUrl: options.hostUrl,
     options: scannerOptions,
   });

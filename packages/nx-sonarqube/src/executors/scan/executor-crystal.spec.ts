@@ -226,7 +226,7 @@ describe('Scan Executor - Crystal', (): void => {
 
   it('should scan project and dependencies', async () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
-    sonarQubeScanner.mockResolvedValue(true);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const output = await sonarScanExecutor(
       {
