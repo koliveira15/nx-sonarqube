@@ -13,7 +13,7 @@
   "executors": "./executors.json",
   "peerDependencies": {
     "@nx/devkit": ">= 16 < 21",
-    "@phenomnomnominal/tsquery": "6.1.3",
+    "@phenomnomnominal/tsquery": ">= 6.1.3",
     "sonarqube-scanner": ">= 4.2.5 < 5",
     "nx": ">= 16 < 21",
     "tslib": ">= 2.3.0 < 3"
