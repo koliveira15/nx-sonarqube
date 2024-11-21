@@ -92,7 +92,9 @@ export async function determinePaths(
 ): Promise<{ lcovPaths: string; sources: string }> {
   const sources: string[] = [];
   const lcovPaths: string[] = [];
-  const deps = await getDependentPackagesForProject(context.projectName);
+  const deps = options.skipAllDeps ?
+    await getDependentPackagesForProject(context.projectName)
+    : {workspaceLibraries: []};
   const projectConfiguration = context.projectsConfigurations.projects[context.projectName];
   deps.workspaceLibraries.push({
     name: context.projectName,

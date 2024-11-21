@@ -51,6 +51,11 @@
       "type": "boolean",
       "default": false
     },
+    "skipAllDeps": {
+      "description": "Skips any dependencies to the project graph analysis",
+      "type": "boolean",
+      "default": false
+    },
     "testInclusions": {
       "description": "Comma-delimited list of test file path patterns to be included in analysis. When set, only test files matching the paths set here will be included in analysis",
       "type": "string",
