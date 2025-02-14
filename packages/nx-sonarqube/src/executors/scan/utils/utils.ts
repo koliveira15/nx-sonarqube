@@ -149,11 +149,12 @@ export async function determinePaths(
             ScriptKind.TS,
           );
           if (nodes.length) {
+            const node = nodes.find(node => node.parent.getText().includes('coverageDirectory')) || nodes[0];
             lcovPaths.push(
               joinPathFragments(
-                nodes[0]
+                node
                   .getText()
-                  .replace(new RegExp(/'/g), '')
+                  .replace(new RegExp(/['"]/g), '')
                   .replace(/^(?:\.\.\/)+/, ''),
                 'lcov.info'
               )
@@ -197,11 +198,12 @@ export async function determinePaths(
           );
 
           if (nodes.length) {
+            const node = nodes.find(node => node.parent.getText().includes('reportsDirectory')) || nodes[0];
             lcovPaths.push(
               joinPathFragments(
-                nodes[0]
+                node
                   .getText()
-                  .replace(new RegExp(/'/g), '')
+                  .replace(new RegExp(/['"]/g), '')
                   .replace(/^(?:\.\.\/)+/, ''),
                 'lcov.info'
               )

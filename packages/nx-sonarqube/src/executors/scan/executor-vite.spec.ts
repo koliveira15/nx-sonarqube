@@ -386,6 +386,37 @@ describe('Scan Executor', (): void => {
     );
   });
 
+  it('should return project test config coverage directory path (from the option "configFile", using a different structure and format)', async () => {
+    const expectedValue = 'vite-custom-coverage/apps/app1';
+    jest.spyOn(fs, 'existsSync').mockReturnValue(true)
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(`
+      import { defineConfig, UserConfig } from "vite";
+
+      export default defineConfig(
+        (): UserConfig => ({
+          test: {
+            coverage: {
+              provider: "istanbul",
+              reportsDirectory: "../../vite-custom-coverage/apps/app1",
+              reporters: ["html", "json", "lcov"],
+            },
+          },
+        }),
+      );
+      `)
+    const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
+    testContext.projectsConfigurations.projects.app1.targets.test.options = {
+      configFile: '../../vite-custom-coverage/apps/app1'
+    };
+    const paths = await determinePaths(
+      commonOptions,
+      testContext
+    );
+    expect(paths.lcovPaths.includes('vite-custom-coverage/apps/app1/lcov.info')).toBe(
+      true
+    );
+  });
+
   it('should return project test config coverage directory path (from the project vite config file)', async () => {
     jest.spyOn(fs, 'existsSync').mockReturnValue(true)
     jest.spyOn(fs, 'readFileSync').mockReturnValue(viteConfig)
