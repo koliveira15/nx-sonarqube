@@ -467,4 +467,46 @@ describe('Scan Executor', (): void => {
 
     expect(output['sonar.projectVersion']).toBe('');
   });
+
+  it('should handle exclusions as a string', async () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
+  
+    const exclusionsString = "**/index.ts, **/*.client.ts, **/*.config.ts, **/*.controller.ts, **/*.data.ts, **/*.dto.ts, **/*.entity.ts, **/*.event.ts, **/*.interface.ts, **/*.module.ts, **/*.settings.ts, **/*.spec.ts, **/generated.ts, **/main.ts, **/ormconfig*.ts, **/webpack.config.js, **/topics/**/*.ts, **/scripts/**/*.ts, **/ready/**/*.ts, **/health/**/*.ts, **/migrations/**/*.ts, **/mastermind/**/*.ts, **/minion/**/*.ts, **/debouncer/**/*.ts, **/interceptors.ts, **/*.resolver.ts, **/*.sdk.*";
+  
+    const output = getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        projectKey: 'key',
+        qualityGate: true,
+        exclusions: exclusionsString,
+      },
+      'src/',
+      'coverage/apps'
+    );
+  
+    expect(output['sonar.exclusions']).toBe(exclusionsString);
+  });
+  
+  it('should handle exclusions as an array', async () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(jestConfig);
+    jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
+  
+    const exclusionsArray = ["**/index.ts", "**/*.client.ts", "**/*.config.ts", "**/*.controller.ts", "**/*.data.ts", "**/*.dto.ts", "**/*.entity.ts", "**/*.event.ts", "**/*.interface.ts", "**/*.module.ts", "**/*.settings.ts", "**/*.spec.ts", "**/generated.ts", "**/main.ts", "**/ormconfig*.ts", "**/webpack.config.js", "**/topics/**/*.ts", "**/scripts/**/*.ts", "**/ready/**/*.ts", "**/health/**/*.ts", "**/migrations/**/*.ts", "**/mastermind/**/*.ts", "**/minion/**/*.ts", "**/debouncer/**/*.ts", "**/interceptors.ts", "**/*.resolver.ts", "**/*.sdk.*"];
+  
+    const output = getScannerOptions(
+      context,
+      {
+        hostUrl: 'url',
+        projectKey: 'key',
+        qualityGate: true,
+        exclusions: exclusionsArray,
+      },
+      'src/',
+      'coverage/apps'
+    );
+  
+    expect(output['sonar.exclusions']).toBe(exclusionsArray.join(','));
+  });
 });
