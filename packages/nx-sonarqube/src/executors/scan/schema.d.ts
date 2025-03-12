@@ -2,7 +2,7 @@ export interface ScanExecutorSchema {
   hostUrl: string;
   projectKey: string;
   branch?: string;
-  exclusions?: string;
+  exclusions?: string | string[];
   organization?: string;
   projectName?: string;
   projectVersion?: string;
