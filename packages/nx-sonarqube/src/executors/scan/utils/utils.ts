@@ -256,7 +256,7 @@ export function getScannerOptions(
   lcovPaths: string
 ): { [option: string]: string } {
   let scannerOptions: { [option: string]: string } = {
-    'sonar.exclusions': options.exclusions,
+    'sonar.exclusions': Array.isArray(options.exclusions) ? options.exclusions.join(',') : options.exclusions,
     'sonar.javascript.lcov.reportPaths': lcovPaths,
     'sonar.language': 'ts',
     'sonar.login': process.env.SONAR_LOGIN,
