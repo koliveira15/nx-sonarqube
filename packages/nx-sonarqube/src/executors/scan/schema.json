@@ -22,7 +22,17 @@
     },
     "exclusions": {
       "description": "Files to exclude from coverage",
-      "type": "string"
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
     },
     "organization": {
       "description": "Sonar organization",
