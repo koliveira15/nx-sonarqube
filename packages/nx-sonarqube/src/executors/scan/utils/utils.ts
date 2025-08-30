@@ -128,40 +128,51 @@ export async function determinePaths(
             )
           );
         } else if (testRunner === TestRunner.Jest) {
-          const jestConfigPath: string = joinPathFragments(
-            context.root,
-            dep.projectRoot,
-            'jest.config.ts'
-          );
-
-          if (!existsSync(jestConfigPath)) {
-            logger.warn(
-              `Skipping ${dep.name} as the jest config file cannot be found`
-            );
-            return;
+          let jestConfigNames: string[] = ['jest.config.ts'];
+          if (options?.jestConfigNames) {
+            if (typeof options.jestConfigNames === 'string') {
+              jestConfigNames = [options.jestConfigNames];
+            } else if (Array.isArray(options.jestConfigNames)) {
+              jestConfigNames = options.jestConfigNames;
+            }
           }
 
-          const jestConfig = readFileSync(jestConfigPath, 'utf-8');
-          const astOutput = ast(jestConfig);
-          const nodes = query(
-            astOutput as unknown as string,
-            'PropertyAssignment:has(Identifier[name="coverageDirectory"]) StringLiteral',
-            ScriptKind.TS,
-          );
-          if (nodes.length) {
-            lcovPaths.push(
-              joinPathFragments(
-                nodes[0]
-                  .getText()
-                  .replace(new RegExp(/'/g), '')
-                  .replace(/^(?:\.\.\/)+/, ''),
-                'lcov.info'
-              )
+          for (const jestConfigName of jestConfigNames) {
+            const jestConfigPath: string = joinPathFragments(
+              context.root,
+              dep.projectRoot,
+              jestConfigName
             );
-          } else {
-            logger.warn(
-              `Skipping ${dep.name} as it does not have a coverageDirectory in ${jestConfigPath}`
+
+            if (!existsSync(jestConfigPath)) {
+              logger.warn(
+                `Skipping ${dep.name} with ${jestConfigName} as the jest config file cannot be found`
+              );
+              continue;
+            }
+
+            const jestConfig = readFileSync(jestConfigPath, 'utf-8');
+            const astOutput = ast(jestConfig);
+            const nodes = query(
+              astOutput as unknown as string,
+              'PropertyAssignment:has(Identifier[name="coverageDirectory"]) StringLiteral',
+              ScriptKind.TS,
             );
+            if (nodes.length) {
+              lcovPaths.push(
+                joinPathFragments(
+                  nodes[0]
+                    .getText()
+                    .replace(new RegExp(/'/g), '')
+                    .replace(/^(?:\.\.\/)+/, ''),
+                  'lcov.info'
+                )
+              );
+            } else {
+              logger.warn(
+                `Skipping ${dep.name} as it does not have a coverageDirectory in ${jestConfigPath}`,
+              );
+            }
           }
         } else if (TestRunner.Vitest) {
           const viteConfigExtensions = ['.ts', '.js', '.mts', '.mjs'];

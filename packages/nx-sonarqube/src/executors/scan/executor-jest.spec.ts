@@ -84,7 +84,7 @@ describe('Scan Executor', (): void => {
             sourceRoot: 'apps/app1/src',
             targets: {
               test: {
-                executor: '',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -100,7 +100,7 @@ describe('Scan Executor', (): void => {
             sourceRoot: 'libs/lib1/src',
             targets: {
               test: {
-                executor: '',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -116,7 +116,7 @@ describe('Scan Executor', (): void => {
             sourceRoot: 'libs/lib2/src',
             targets: {
               test: {
-                executor: '',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -132,7 +132,7 @@ describe('Scan Executor', (): void => {
             sourceRoot: 'libs/lib3/src',
             targets: {
               test: {
-                executor: '',
+                executor: '@nx/jest:jest',
                 options: {
                   jestConfig: 'jest.config.ts',
                 },
@@ -240,7 +240,7 @@ describe('Scan Executor', (): void => {
         projectKey: 'key',
         qualityGate: true,
       },
-      newContext
+      newContext,
     );
     expect(output.success).toBe(true);
   });
@@ -256,7 +256,7 @@ describe('Scan Executor', (): void => {
         projectKey: 'key',
         qualityGate: true,
       },
-      context
+      context,
     );
     expect(output.success).toBe(true);
   });
@@ -266,7 +266,8 @@ describe('Scan Executor', (): void => {
     jest.spyOn(sonarQubeScanner, 'scan').mockResolvedValue();
 
     const newContext = { ...context };
-    newContext.projectsConfigurations.projects['app1'].targets.test.options = {};
+    newContext.projectsConfigurations.projects['app1'].targets.test.options =
+      {};
 
     const output = await sonarScanExecutor(
       {
@@ -274,7 +275,7 @@ describe('Scan Executor', (): void => {
         projectKey: 'key',
         qualityGate: true,
       },
-      newContext
+      newContext,
     );
     expect(output.success).toBe(true);
   });
@@ -290,7 +291,7 @@ describe('Scan Executor', (): void => {
         projectKey: 'key',
         qualityGate: true,
       },
-      context
+      context,
     );
     expect(output.success).toBe(true);
   });
@@ -306,7 +307,7 @@ describe('Scan Executor', (): void => {
         hostUrl: 'url',
         projectKey: 'key',
       },
-      context
+      context,
     );
     expect(output.success).toBeFalsy();
   });
@@ -317,7 +318,7 @@ describe('Scan Executor', (): void => {
         hostUrl: 'url',
         projectKey: 'key',
       },
-      context
+      context,
     );
     expect(paths.lcovPaths.includes('coverage/apps/app1/lcov.info')).toBe(true);
   });
@@ -331,10 +332,48 @@ describe('Scan Executor', (): void => {
         hostUrl: 'url',
         projectKey: 'key',
       },
-      testContext
+      testContext,
     );
     expect(paths.lcovPaths.includes('coverage/test/apps/app1/lcov.info')).toBe(
-      true
+      true,
     );
+  });
+
+  it('should return multiple project test config coverage directory path', async () => {
+    const jestConfigE2E = `export default {
+      displayName: 'app1',
+      preset: '../../jest.preset.js',
+      globals: {
+        'ts-jest': {
+          tsconfig: '<rootDir>/tsconfig.spec.json',
+        },
+      },
+      transform: {
+        '^.+\\\\.[tj]s$': 'ts-jest',
+      },
+      moduleFileExtensions: ['ts', 'js', 'html', 'json'],
+      coverageDirectory: '../../coverage-e2e/apps/app1',
+    };`;
+
+    jest.spyOn(fs, 'readFileSync').mockImplementation((path: string) => {
+      if (path.endsWith('jest.config.ts')) {
+        return jestConfig;
+      }
+      return jestConfigE2E;
+    });
+
+    const testContext = JSON.parse(JSON.stringify(context)) as typeof context;
+    const paths = await determinePaths(
+      {
+        hostUrl: 'url',
+        projectKey: 'key',
+        jestConfigNames: ['jest.config.ts', 'jest.config.e2e.ts'],
+      },
+      testContext,
+    );
+    expect(paths.lcovPaths.includes('coverage/apps/app1/lcov.info')).toBe(true);
+    expect(
+      paths.lcovPaths.includes('coverage-e2e/apps/app1/lcov.info'),
+    ).toBe(true);
   });
 });

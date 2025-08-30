@@ -13,4 +13,5 @@ export interface ScanExecutorSchema {
   tsConfig?: string;
   verbose?: boolean;
   extra?: { [option: string]: string };
+  jestConfigNames?: string | string[];
 }
