@@ -1,3 +1,4 @@
-# @koliveira15/nx-sonarqube
+# @gduquenne/nx-sonarqube
 
-[Documentation](https://nx-sonarqube.dev/)
+A Nx Plugin that contains executors and generators to support scanning projects
+using Sonar

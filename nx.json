@@ -33,7 +33,6 @@
     }
   },
   "workspaceLayout": {
-    "appsDir": "e2e",
     "libsDir": "packages"
   },
   "namedInputs": {
