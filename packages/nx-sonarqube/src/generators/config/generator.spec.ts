@@ -6,8 +6,8 @@ import {
   updateNxJson,
   updateProjectConfiguration,
 } from '@nx/devkit';
-import sonarQubeConfigGenerator from './generator';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
+import sonarQubeConfigGenerator from './generator';
 
 describe('Configuration generator', () => {
   let tree: Tree;

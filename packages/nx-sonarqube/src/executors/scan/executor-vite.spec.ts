@@ -1,14 +1,14 @@
-import sonarScanExecutor from './executor';
 import {
   DependencyType,
   ExecutorContext,
   ProjectGraph,
   readJsonFile,
 } from '@nx/devkit';
-import * as sonarQubeScanner from 'sonarqube-scanner';
-import { determinePaths } from './utils/utils';
-import { ScanExecutorSchema } from './schema';
 import * as fs from 'fs';
+import * as sonarQubeScanner from 'sonarqube-scanner';
+import sonarScanExecutor from './executor';
+import { ScanExecutorSchema } from './schema';
+import { determinePaths } from './utils/utils';
 
 let projectGraph: ProjectGraph;
 let context: ExecutorContext;

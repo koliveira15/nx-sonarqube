@@ -1,4 +1,3 @@
-import { ScanExecutorSchema } from '../schema';
 import {
   createProjectGraphAsync,
   DependencyType,
@@ -11,8 +10,9 @@ import {
   TargetConfiguration,
 } from '@nx/devkit';
 import { ast, query, ScriptKind } from '@phenomnomnominal/tsquery';
-import * as sonarQubeScanner from 'sonarqube-scanner';
 import { existsSync, readFileSync } from 'fs';
+import * as sonarQubeScanner from 'sonarqube-scanner';
+import { ScanExecutorSchema } from '../schema';
 
 interface OptionMarshaller {
   Options(): { [option: string]: string };
